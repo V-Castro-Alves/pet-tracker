@@ -60,12 +60,13 @@ Companion to `pet-tracker-spec.md` and `pet-tracker-functional-spec.md`. This do
 | qr_token | string | unique, regenerable |
 | created_at | datetime | |
 
-### PetUser (link table — flat permissions, no role field needed)
+### PetUser
 | Field | Type | Notes |
 |---|---|---|
 | id | UUID | PK |
-| pet_id | UUID | FK → Pet |
 | user_id | UUID | FK → User |
+| pet_id | UUID | FK → Pet |
+| is_pet_admin | boolean | default false | 
 | linked_at | datetime | |
 
 - Constraint: a `Pet` must always have ≥1 `PetUser` row (enforce in application logic — block removal of the last one).
@@ -232,13 +233,3 @@ Implemented as Solid Queue jobs (Rails 8's built-in DB-backed job backend — no
 - QR image encodes the URL `https://<app-domain>/meal_log/{qr_token}`.
 - Generate on demand (`pets/:pet_id/qr_code`) using the `rqrcode` gem; render as PNG/SVG directly, or embed in a simple printable PDF (e.g. via Prawn) with the pet's name/instructions.
 - Regeneration (`pets/:pet_id/qr_code/regenerate`) creates a new `qr_token`, immediately invalidating the old code (old physical printout stops resolving).
-
----
-
-## 7. Open Technical Decisions (to confirm before/while building)
-
-- Rails 8 built-in auth generator vs. Devise.
-- Authorization approach: Pundit/CanCanCan vs. simple hand-rolled `before_action` checks — given the flat permission model (no roles), a hand-rolled check may be simpler than pulling in a full authorization gem.
-- Whether meal-slot occurrences are generated as rows ahead of time or computed on the fly from `MealSlot` + calendar date when checking for unresolved meals — computing on the fly is simpler and avoids pre-generating rows indefinitely into the future.
-- How much of the QR/Log-a-Meal flow should use Turbo Frames/Streams for a snappier confirm experience vs. plain full-page renders (likely worth Turbo Streams given it's the most latency-sensitive interaction in the app).
-- Timing of introducing Turbo Native — after v1 is stable on the web, or in parallel once core screens are settled.

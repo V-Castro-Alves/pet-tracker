@@ -55,9 +55,8 @@ This document breaks the product spec down into concrete screens, flows, and edg
 
 ### 2.5 Manage Linked Users
 - List of users currently linked (name/email).
-- "Invite" action → generates an invite link or sends an email invite.
-- "Remove" action next to each user (disabled/hidden for the last remaining user — see edge case 4.2).
-- Since permissions are flat, there's no role picker here — just "linked" or "not linked."
+- "Invite" action → generates an invite link or sends an email invite. (for administrator)
+- "Remove" action next to each user (disabled/hidden for the last remaining user — see edge case 4.2). (for administrator)
 
 ### 2.6 Meal Schedule Setup
 - Set number of meals/day.
@@ -159,9 +158,9 @@ This document breaks the product spec down into concrete screens, flows, and edg
 
 ## 4. Edge Cases
 
-1. **Deleting a pet.** Requires confirmation; deletion removes the pet for *all* linked users, not just the requester. Consider requiring a typed confirmation (e.g. pet's name) given the destructive, shared-impact nature.
+1. **Deleting a pet.** Requires confirmation; deletion removes the pet for *all* linked users, not just the requester. Require a typed confirmation (e.g. pet's name) given the destructive, shared-impact nature. (only the admin can do that)
 2. **Removing the last linked user.** Not allowed — a pet must always have at least one linked user. If the last user wants to stop tracking a pet entirely, that action should be framed as "delete this pet" instead, with a clear warning.
-3. **Regenerating a QR token.** If a code is lost, damaged, or the user is worried about it being copied, allow generating a new token for the pet, which invalidates the old code (old printed code stops working). The user must print and swap the physical code.
+3. **Regenerating a QR token.** If a code is lost, damaged, or the user is worried about it being copied, allow generating a new token for the pet, which invalidates the old code (old printed code stops working). The user must print and swap the physical code. (only the admin can do that)
 4. **Duplicate meal log within the grace window.** Second log attempt for an already-logged slot shows the warning banner (2.7) rather than silently creating a second entry.
 5. **Editing schedule after logs already exist.** Changing a meal slot's time/amount only affects future occurrences; past Meal History entries retain the amount/time that was actually logged.
 6. **Multiple unresolved meals stacking up.** If the app hasn't been opened in a while, several meal slots may be unresolved at once — Catch-Up Prompt resolves them one at a time, oldest first, rather than presenting a bulk form.
