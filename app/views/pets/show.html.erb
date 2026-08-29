@@ -13,6 +13,19 @@
   </div>
 </section>
 
+<section class="dashboard-section page-action">
+  <div class="section-heading">
+    <div><p class="eyebrow">Supplies</p><h2>Food inventory</h2></div>
+    <%= link_to "View inventory", pet_food_bags_path(@pet) %>
+  </div>
+  <% if (bag = @pet.active_food_bag) %>
+    <p><strong><%= number_with_precision(bag.remaining_weight_g, precision: 0, strip_insignificant_zeros: true) %> g remaining</strong><%= " · running low" if bag.low_stock? %></p>
+  <% else %>
+    <p class="muted">No active food bag.</p>
+    <%= link_to "Start a bag", new_pet_food_bag_path(@pet), class: "button button-secondary" %>
+  <% end %>
+</section>
+
 <section class="dashboard-section">
   <div class="section-heading">
     <div>

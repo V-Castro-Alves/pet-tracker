@@ -1,0 +1,25 @@
+<% content_for :title, "#{@pet.name}'s food inventory" %>
+<section class="page-header">
+  <div><p class="eyebrow"><%= link_to @pet.name, @pet %></p><h1>Food inventory</h1></div>
+  <%= link_to "Start new bag", new_pet_food_bag_path(@pet), class: "button button-primary button-fit" %>
+</section>
+
+<% if @active_bag %>
+  <section class="inventory-card <%= "inventory-low" if @active_bag.low_stock? %>">
+    <div class="section-heading">
+      <div><p class="eyebrow"><%= @active_bag.low_stock? ? "Running low" : "Current bag" %></p><h2><%= number_with_precision(@active_bag.remaining_weight_g, precision: 0, strip_insignificant_zeros: true) %> g remaining</h2></div>
+      <strong><%= number_to_percentage(@active_bag.percentage_remaining, precision: 0) %></strong>
+    </div>
+    <div class="inventory-meter" role="meter" aria-label="Food remaining" aria-valuenow="<%= @active_bag.percentage_remaining %>" aria-valuemin="0" aria-valuemax="100"><span style="width: <%= @active_bag.percentage_remaining %>%"></span></div>
+    <p><%= @active_bag.estimated_days_remaining ? "About #{@active_bag.estimated_days_remaining} days left based on recent meals." : "Log meals to calculate an estimated number of days remaining." %></p>
+    <%= button_to "Mark bag finished", finish_pet_food_bag_path(@pet, @active_bag), method: :patch, class: "link-button danger-link", form: { data: { turbo_confirm: "Mark this bag as finished?" } } %>
+  </section>
+<% else %>
+  <section class="empty-state"><div class="empty-state-icon" aria-hidden="true">📦</div><h2>No active food bag</h2><p>Start a bag so fed meals automatically reduce its balance.</p><%= link_to "Start a bag", new_pet_food_bag_path(@pet), class: "button button-primary button-fit" %></section>
+<% end %>
+
+<% if @food_bags.any? %>
+  <section class="dashboard-section page-action"><h2>Bag history</h2>
+    <div class="history-list"><% @food_bags.each do |bag| %><article class="history-row"><div><strong><%= number_with_precision(bag.total_weight_g, precision: 0, strip_insignificant_zeros: true) %> g bag</strong><p>Opened <%= l bag.started_at.in_time_zone(@pet.time_zone), format: :short %></p></div><div><%= bag.ended_at ? "Finished" : "Active" %><p><%= number_with_precision(bag.remaining_weight_g, precision: 0, strip_insignificant_zeros: true) %> g recorded</p></div></article><% end %></div>
+  </section>
+<% end %>

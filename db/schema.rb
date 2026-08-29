@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_29_173000) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_29_180000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
@@ -37,6 +37,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_173000) do
     t.integer "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "food_bags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "ended_at"
+    t.datetime "low_stock_notified_at"
+    t.decimal "low_stock_percentage", precision: 5, scale: 2, default: "15.0", null: false
+    t.integer "pet_id", null: false
+    t.decimal "remaining_weight_g", precision: 10, scale: 2, null: false
+    t.datetime "started_at", null: false
+    t.decimal "total_weight_g", precision: 10, scale: 2, null: false
+    t.datetime "updated_at", null: false
+    t.index ["pet_id"], name: "index_food_bags_on_one_active_per_pet", unique: true, where: "ended_at IS NULL"
+    t.index ["pet_id"], name: "index_food_bags_on_pet_id"
+    t.check_constraint "low_stock_percentage > 0 AND low_stock_percentage <= 100", name: "food_bags_valid_low_stock_percentage"
+    t.check_constraint "total_weight_g > 0", name: "food_bags_positive_total"
   end
 
   create_table "meal_logs", force: :cascade do |t|
@@ -116,6 +132,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_173000) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "food_bags", "pets"
   add_foreign_key "meal_logs", "meal_logs", column: "duplicate_of_id"
   add_foreign_key "meal_logs", "meal_slots"
   add_foreign_key "meal_logs", "pets"

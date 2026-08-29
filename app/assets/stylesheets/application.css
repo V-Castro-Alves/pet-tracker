@@ -111,6 +111,11 @@ textarea { resize: vertical; }
 .status-badge { padding: 0.35rem 0.6rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 800; }
 .status-fed { color: #195a3e; background: #dcefe3; }
 .status-skipped { color: #6e4510; background: #fff0ce; }
+.inventory-card { padding: clamp(1.25rem, 5vw, 2rem); border: 1px solid var(--border); border-radius: 1rem; background: var(--surface); }
+.inventory-low { border-color: #e1b86f; background: #fffaf0; }
+.inventory-meter { height: 0.8rem; overflow: hidden; margin: 1rem 0; border-radius: 1rem; background: #dfe5df; }
+.inventory-meter span { display: block; height: 100%; border-radius: inherit; background: var(--primary); }
+.inventory-low .inventory-meter span { background: #c27a17; }
 
 @media (max-width: 35rem) {
   .container { padding-top: 1rem; }

@@ -1,0 +1,14 @@
+active:
+  pet: one
+  total_weight_g: 3000
+  remaining_weight_g: 2000
+  low_stock_percentage: 15
+  started_at: <%= 5.days.ago %>
+
+finished:
+  pet: one
+  total_weight_g: 2000
+  remaining_weight_g: 0
+  low_stock_percentage: 15
+  started_at: <%= 40.days.ago %>
+  ended_at: <%= 10.days.ago %>

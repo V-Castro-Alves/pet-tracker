@@ -6,6 +6,18 @@ class Pet < ApplicationRecord
   has_many :users, through: :pet_users
   has_many :meal_slots, dependent: :destroy
   has_many :meal_logs, dependent: :destroy
+  has_many :food_bags, dependent: :destroy
+
+  def active_food_bag
+    food_bags.active.first
+  end
+
+  def average_daily_consumption_g(since: 30.days.ago)
+    logs = meal_logs.fed.where(actual_time: since..).group_by { |log| log.actual_time.in_time_zone(time_zone).to_date }
+    return 0.to_d if logs.empty?
+
+    logs.values.sum { |daily_logs| daily_logs.sum(&:actual_amount_g) } / logs.size
+  end
 
   validates :name, :species, presence: true
   validates :sex, inclusion: { in: %w[female male unknown] }, allow_blank: true

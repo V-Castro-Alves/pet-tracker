@@ -22,15 +22,27 @@ module Meals
         existing = pet.meal_logs.find_by(meal_slot: meal_slot, scheduled_for: attributes[:scheduled_for])
         raise DuplicateMealError, existing if existing && !allow_duplicate
 
-        pet.meal_logs.create!(attributes.merge(
+        meal_log = pet.meal_logs.create!(attributes.merge(
           meal_slot: meal_slot,
           logged_by_user: user,
           duplicate_of: existing
         ))
+
+        consume_from_active_bag!(meal_log)
+        meal_log
       end
     end
 
     private
       attr_reader :pet, :meal_slot, :user, :attributes, :allow_duplicate
+
+      def consume_from_active_bag!(meal_log)
+        return unless meal_log.fed?
+
+        bag = pet.active_food_bag
+        return unless bag
+
+        bag.update!(remaining_weight_g: bag.remaining_weight_g - meal_log.actual_amount_g)
+      end
   end
 end

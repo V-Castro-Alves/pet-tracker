@@ -1,0 +1,25 @@
+<% content_for :title, "Start a food bag for #{@pet.name}" %>
+<section class="content-card">
+  <p class="eyebrow"><%= @pet.name %>'s inventory</p>
+  <h1>Start a new bag</h1>
+  <p class="muted">Starting this bag will close the currently active bag, if there is one.</p>
+
+  <%= form_with model: [@pet, @food_bag] do |form| %>
+    <%= render "shared/form_errors", record: @food_bag %>
+    <div class="form-grid">
+      <div class="field">
+        <%= form.label :total_weight_g, "Bag weight (grams)" %>
+        <%= form.number_field :total_weight_g, required: true, min: 0.01, step: 0.01, inputmode: "decimal", placeholder: "3000" %>
+      </div>
+      <div class="field">
+        <%= form.label :low_stock_percentage, "Low-stock warning (%)" %>
+        <%= form.number_field :low_stock_percentage, required: true, min: 1, max: 100, step: 0.1 %>
+      </div>
+      <div class="field">
+        <%= form.label :started_at, "Opened at" %>
+        <%= form.datetime_local_field :started_at, required: true, value: @food_bag.started_at&.in_time_zone(@pet.time_zone)&.strftime("%Y-%m-%dT%H:%M") %>
+      </div>
+    </div>
+    <%= form.submit "Start bag", class: "button button-primary button-fit" %>
+  <% end %>
+</section>

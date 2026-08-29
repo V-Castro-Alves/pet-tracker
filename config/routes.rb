@@ -5,6 +5,9 @@ Rails.application.routes.draw do
   resources :pets do
     resources :meal_slots, except: :show
     resources :meal_logs, only: %i[index new create]
+    resources :food_bags, only: %i[index new create] do
+      patch :finish, on: :member
+    end
   end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 

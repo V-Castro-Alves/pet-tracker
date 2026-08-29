@@ -10,4 +10,18 @@ class Meals::LogMealTest < ActiveSupport::TestCase
     duplicate = Meals::LogMeal.new(**service_args, allow_duplicate: true).call
     assert_equal existing, duplicate.duplicate_of
   end
+
+  test "a fed meal consumes the active bag in the same transaction" do
+    attributes = { scheduled_for: 1.day.from_now, status: "fed", actual_amount_g: 125, actual_time: Time.current }
+    assert_difference -> { food_bags(:active).reload.remaining_weight_g }, -125 do
+      Meals::LogMeal.new(pet: pets(:one), meal_slot: meal_slots(:dinner), user: users(:one), attributes: attributes).call
+    end
+  end
+
+  test "a skipped meal does not consume food" do
+    attributes = { scheduled_for: 2.days.from_now, status: "skipped", actual_amount_g: nil, actual_time: nil }
+    assert_no_changes -> { food_bags(:active).reload.remaining_weight_g } do
+      Meals::LogMeal.new(pet: pets(:one), meal_slot: meal_slots(:dinner), user: users(:one), attributes: attributes).call
+    end
+  end
 end
