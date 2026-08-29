@@ -8,6 +8,11 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   end
 
   private
+    def type_into(selector, value)
+      field = find(selector)
+      Capybara.current_driver == :rack_test ? field.set(value) : field.send_keys(value)
+    end
+
     def sign_in_as(user, password: "password")
       visit new_session_path
       fill_in "Email", with: user.email_address

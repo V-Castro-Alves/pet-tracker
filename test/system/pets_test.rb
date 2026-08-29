@@ -5,9 +5,9 @@ class PetsTest < ApplicationSystemTestCase
     sign_in_as users(:one)
     click_link "Add pet"
 
-    fill_in "pet_name", with: "Milo"
-    fill_in "pet_species", with: "Cat"
-    fill_in "pet_breed", with: "Tabby"
+    type_into "#pet_name", "Milo"
+    type_into "#pet_species", "Cat"
+    type_into "#pet_breed", "Tabby"
     select "(GMT+00:00) UTC", from: "pet_time_zone"
 
     assert_field "pet_name", with: "Milo"
