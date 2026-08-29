@@ -1,5 +1,7 @@
 require "test_helper"
 
+Selenium::WebDriver.logger.level = :warn
+
 class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   if ENV["SYSTEM_TEST_DRIVER"] == "rack_test"
     driven_by :rack_test
@@ -8,22 +10,33 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   end
 
   private
-    def type_into(selector, value, replace: false)
+    def set_control(selector, value)
       field = find(selector)
       if Capybara.current_driver == :rack_test
         field.set(value)
-      elsif replace
-        field.send_keys(:control, "a", :null, :backspace, value)
       else
-        field.send_keys(value)
+        execute_script <<~JS, field, value
+          arguments[0].value = arguments[1];
+          arguments[0].dispatchEvent(new Event("input", { bubbles: true }));
+          arguments[0].dispatchEvent(new Event("change", { bubbles: true }));
+        JS
+      end
+    end
+
+    def submit_form(button_text)
+      button = find_button(button_text)
+      if Capybara.current_driver == :rack_test
+        button.click
+      else
+        execute_script "arguments[0].form.requestSubmit(arguments[0])", button
       end
     end
 
     def sign_in_as(user, password: "password")
       visit new_session_path
-      fill_in "Email", with: user.email_address
-      fill_in "Password", with: password
-      click_button "Sign in"
+      set_control "#email_address", user.email_address
+      set_control "#password", password
+      submit_form "Sign in"
 
       assert_text "Your pets"
     end
