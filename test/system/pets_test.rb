@@ -5,10 +5,14 @@ class PetsTest < ApplicationSystemTestCase
     sign_in_as users(:one)
     click_link "Add pet"
 
-    fill_in "Name", with: "Milo"
-    fill_in "Species", with: "Cat"
-    fill_in "Breed", with: "Tabby"
-    select "(GMT+00:00) UTC", from: "Time zone"
+    fill_in "pet_name", with: "Milo"
+    fill_in "pet_species", with: "Cat"
+    fill_in "pet_breed", with: "Tabby"
+    select "(GMT+00:00) UTC", from: "pet_time_zone"
+
+    assert_field "pet_name", with: "Milo"
+    assert_field "pet_species", with: "Cat"
+    assert_field "pet_breed", with: "Tabby"
 
     assert_difference [ "Pet.count", "PetUser.count" ], 1 do
       click_button "Create Pet"
