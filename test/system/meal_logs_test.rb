@@ -12,7 +12,8 @@ class MealLogsTest < ApplicationSystemTestCase
 
     assert_text "Log Dinner"
     select "Fed", from: "Status"
-    fill_in "Amount (grams)", with: "125"
+    type_into "#meal_log_actual_amount_g", "125"
+    assert_field "meal_log_actual_amount_g", with: "125"
 
     assert_difference "MealLog.count", 1 do
       click_button "Save meal"

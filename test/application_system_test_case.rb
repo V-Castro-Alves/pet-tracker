@@ -10,7 +10,11 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   private
     def type_into(selector, value)
       field = find(selector)
-      Capybara.current_driver == :rack_test ? field.set(value) : field.send_keys(value)
+      if Capybara.current_driver == :rack_test
+        field.set(value)
+      else
+        field.send_keys([ :control, "a" ], :backspace, value)
+      end
     end
 
     def sign_in_as(user, password: "password")
