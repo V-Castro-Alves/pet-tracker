@@ -1,0 +1,20 @@
+<%= form_with model: [pet, meal_slot] do |form| %>
+  <%= render "shared/form_errors", record: meal_slot %>
+
+  <div class="form-grid">
+    <div class="field">
+      <%= form.label :name, "Meal name" %>
+      <%= form.text_field :name, required: true, autofocus: true, placeholder: "Breakfast" %>
+    </div>
+    <div class="field">
+      <%= form.label :scheduled_time, "Daily time" %>
+      <%= form.time_field :scheduled_time, required: true %>
+    </div>
+    <div class="field">
+      <%= form.label :default_amount_g, "Default serving (grams)" %>
+      <%= form.number_field :default_amount_g, required: true, min: 0.01, step: 0.01, inputmode: "decimal" %>
+    </div>
+  </div>
+
+  <%= form.submit class: "button button-primary button-fit" %>
+<% end %>

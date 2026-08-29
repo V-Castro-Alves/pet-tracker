@@ -1,0 +1,6 @@
+<% content_for :title, "Edit #{@meal_slot.name}" %>
+<section class="content-card">
+  <p class="eyebrow"><%= @pet.name %>'s schedule</p>
+  <h1>Edit <%= @meal_slot.name %></h1>
+  <%= render "form", pet: @pet, meal_slot: @meal_slot %>
+</section>

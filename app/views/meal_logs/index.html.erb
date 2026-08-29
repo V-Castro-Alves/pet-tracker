@@ -1,0 +1,22 @@
+<% content_for :title, "#{@pet.name}'s meal history" %>
+<section class="page-header">
+  <div><p class="eyebrow"><%= link_to @pet.name, @pet %></p><h1>Meal history</h1></div>
+  <%= link_to "Log meal", new_pet_meal_log_path(@pet), class: "button button-primary button-fit" %>
+</section>
+
+<%= form_with url: pet_meal_logs_path(@pet), method: :get, class: "filter-bar" do |form| %>
+  <div class="field"><%= form.label :from, "From" %><%= form.date_field :from, value: params[:from] %></div>
+  <div class="field"><%= form.label :logged_by_user_id, "Caretaker" %><%= form.collection_select :logged_by_user_id, @pet.users.order(:name), :id, :name, include_blank: "Everyone", selected: params[:logged_by_user_id] %></div>
+  <%= form.submit "Filter", class: "button button-secondary" %>
+<% end %>
+
+<div class="history-list">
+  <% @meal_logs.each do |log| %>
+    <article class="history-row">
+      <span class="status-badge status-<%= log.status %>"><%= log.status.capitalize %></span>
+      <div><strong><%= log.meal_slot.name %></strong><p><%= l log.scheduled_for.in_time_zone(@pet.time_zone), format: :long %></p></div>
+      <div><%= log.actual_amount_g ? "#{number_with_precision(log.actual_amount_g, precision: 0, strip_insignificant_zeros: true)} g" : "—" %><p>by <%= log.logged_by_user.name %><%= " · duplicate" if log.duplicate_of_id? %></p></div>
+    </article>
+  <% end %>
+  <% if @meal_logs.empty? %><section class="empty-state"><h2>No meals logged yet</h2><p>Your resolved meals will appear here.</p></section><% end %>
+</div>

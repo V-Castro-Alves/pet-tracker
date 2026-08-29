@@ -1,0 +1,41 @@
+<%= form_with model: pet do |form| %>
+  <%= render "shared/form_errors", record: pet %>
+
+  <div class="form-grid">
+    <div class="field">
+      <%= form.label :name %>
+      <%= form.text_field :name, required: true, autofocus: true %>
+    </div>
+    <div class="field">
+      <%= form.label :species %>
+      <%= form.text_field :species, required: true, placeholder: "Dog, cat, rabbit…" %>
+    </div>
+    <div class="field">
+      <%= form.label :breed %>
+      <%= form.text_field :breed %>
+    </div>
+    <div class="field">
+      <%= form.label :birthdate %>
+      <%= form.date_field :birthdate, max: Date.current %>
+    </div>
+    <div class="field">
+      <%= form.label :sex %>
+      <%= form.select :sex, [["Female", "female"], ["Male", "male"], ["Unknown", "unknown"]], include_blank: "Not specified" %>
+    </div>
+    <div class="field">
+      <%= form.label :time_zone %>
+      <%= form.time_zone_select :time_zone, nil, {}, required: true %>
+    </div>
+  </div>
+
+  <div class="field">
+    <%= form.label :photo %>
+    <%= form.file_field :photo, accept: "image/png,image/jpeg,image/webp" %>
+  </div>
+  <div class="field">
+    <%= form.label :notes %>
+    <%= form.text_area :notes, rows: 5 %>
+  </div>
+
+  <%= form.submit class: "button button-primary button-fit" %>
+<% end %>

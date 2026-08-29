@@ -1,0 +1,32 @@
+<section class="page-header">
+  <div>
+    <p class="eyebrow">Care dashboard</p>
+    <h1>Your pets</h1>
+  </div>
+  <%= link_to "Add pet", new_pet_path, class: "button button-primary button-fit" %>
+</section>
+
+<% if pets.any? %>
+  <div class="pet-grid">
+    <% pets.each do |pet| %>
+      <%= link_to pet, class: "pet-card" do %>
+        <% if pet.photo.attached? %>
+          <%= image_tag pet.photo.variant(resize_to_fill: [320, 220]), alt: "", class: "pet-card-photo" %>
+        <% else %>
+          <div class="pet-card-photo pet-photo-placeholder" aria-hidden="true">🐾</div>
+        <% end %>
+        <div class="pet-card-body">
+          <h2><%= pet.name %></h2>
+          <p><%= pet.species %><%= " · #{pet.breed}" if pet.breed.present? %></p>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <section class="empty-state">
+    <div class="empty-state-icon" aria-hidden="true">🐾</div>
+    <h2>Add your first pet</h2>
+    <p>Once your pet is here, you can create a feeding schedule and invite other caretakers.</p>
+    <%= link_to "Add a pet", new_pet_path, class: "button button-primary button-fit" %>
+  </section>
+<% end %>

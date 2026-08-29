@@ -1,0 +1,11 @@
+owner:
+  pet: one
+  user: one
+  is_pet_admin: true
+  linked_at: <%= Time.current %>
+
+other_owner:
+  pet: two
+  user: two
+  is_pet_admin: true
+  linked_at: <%= Time.current %>

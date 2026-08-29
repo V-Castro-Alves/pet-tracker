@@ -1,0 +1,34 @@
+<% content_for :title, "#{@pet.name}'s meal schedule" %>
+<section class="page-header">
+  <div>
+    <p class="eyebrow"><%= link_to @pet.name, @pet %></p>
+    <h1>Meal schedule</h1>
+  </div>
+  <%= link_to "Add meal", new_pet_meal_slot_path(@pet), class: "button button-primary button-fit" %>
+</section>
+
+<% if @meal_slots.any? %>
+  <div class="schedule-list">
+    <% @meal_slots.each do |meal_slot| %>
+      <article class="schedule-row">
+        <div class="schedule-time"><%= meal_slot.scheduled_time.strftime("%H:%M") %></div>
+        <div class="schedule-details">
+          <h2><%= meal_slot.name %></h2>
+          <p><%= number_with_precision(meal_slot.default_amount_g, precision: 0, strip_insignificant_zeros: true) %> g default serving</p>
+        </div>
+        <div class="schedule-actions">
+          <%= link_to "Edit", edit_pet_meal_slot_path(@pet, meal_slot) %>
+          <%= button_to "Remove", pet_meal_slot_path(@pet, meal_slot), method: :delete, class: "link-button danger-link", form: { data: { turbo_confirm: "Remove #{meal_slot.name} from future schedules?" } } %>
+        </div>
+      </article>
+    <% end %>
+  </div>
+  <%= link_to "Done", @pet, class: "button button-secondary page-action" %>
+<% else %>
+  <section class="empty-state">
+    <div class="empty-state-icon" aria-hidden="true">🍽️</div>
+    <h2>Add <%= @pet.name %>'s first meal</h2>
+    <p>Set the usual time and serving amount. You can adjust the amount whenever you log a meal.</p>
+    <%= link_to "Add first meal", new_pet_meal_slot_path(@pet), class: "button button-primary button-fit" %>
+  </section>
+<% end %>

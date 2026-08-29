@@ -1,0 +1,8 @@
+breakfast_today:
+  pet: one
+  meal_slot: breakfast
+  scheduled_for: <%= Time.zone.now.beginning_of_day + 8.hours %>
+  status: fed
+  actual_amount_g: 100
+  actual_time: <%= Time.current %>
+  logged_by_user: one

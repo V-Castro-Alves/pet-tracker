@@ -1,0 +1,33 @@
+<% content_for :title, "Log #{@occurrence.meal_slot.name}" %>
+<section class="content-card log-card">
+  <p class="eyebrow"><%= @pet.name %> · <%= l @occurrence.scheduled_for.in_time_zone(@pet.time_zone), format: :long %></p>
+  <h1>Log <%= @occurrence.meal_slot.name %></h1>
+
+  <% if @duplicate %>
+    <div class="duplicate-warning" role="alert">
+      <strong>Already logged by <%= @duplicate.logged_by_user.name %></strong>
+      <p>This meal was marked <%= @duplicate.status %> at <%= l @duplicate.created_at.in_time_zone(@pet.time_zone), format: :short %>. Continue only if the pet was fed or resolved twice.</p>
+    </div>
+  <% end %>
+
+  <%= form_with url: pet_meal_logs_path(@pet), scope: :meal_log do |form| %>
+    <% if @meal_log&.errors&.any? %><%= render "shared/form_errors", record: @meal_log %><% end %>
+    <%= form.hidden_field :meal_slot_id, value: @occurrence.meal_slot.id %>
+    <%= form.hidden_field :scheduled_for, value: @occurrence.scheduled_for.iso8601 %>
+    <%= hidden_field_tag :allow_duplicate, "1" if @duplicate %>
+
+    <div class="field">
+      <%= form.label :status %>
+      <%= form.select :status, [["Fed", "fed"], ["Skipped", "skipped"]], selected: @form_values&.dig(:status) || "fed" %>
+    </div>
+    <div class="field">
+      <%= form.label :actual_amount_g, "Amount (grams)" %>
+      <%= form.number_field :actual_amount_g, value: @form_values&.dig(:actual_amount_g) || @occurrence.meal_slot.default_amount_g, min: 0.01, step: 0.01, inputmode: "decimal" %>
+    </div>
+    <div class="field">
+      <%= form.label :actual_time, "Time fed" %>
+      <%= form.datetime_local_field :actual_time, value: @form_values&.dig(:actual_time) || Time.current.in_time_zone(@pet.time_zone).strftime("%Y-%m-%dT%H:%M") %>
+    </div>
+    <%= form.submit @duplicate ? "Confirm duplicate log" : "Save meal", class: "button button-primary" %>
+  <% end %>
+</section>

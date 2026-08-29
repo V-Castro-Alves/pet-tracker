@@ -1,0 +1,18 @@
+<% content_for :title, "Edit #{@pet.name}" %>
+<section class="content-card">
+  <p class="eyebrow">Pet profile</p>
+  <h1>Edit <%= @pet.name %></h1>
+  <%= render "form", pet: @pet %>
+</section>
+
+<section class="danger-zone">
+  <h2>Delete this pet</h2>
+  <p>This removes <%= @pet.name %> and their records for every linked caretaker.</p>
+  <%= form_with url: pet_path(@pet), method: :delete do |form| %>
+    <div class="field">
+      <%= form.label :confirmation, "Enter #{@pet.name} to confirm" %>
+      <%= form.text_field :confirmation, required: true, autocomplete: "off" %>
+    </div>
+    <%= form.submit "Delete #{@pet.name}", class: "button button-danger" %>
+  <% end %>
+</section>

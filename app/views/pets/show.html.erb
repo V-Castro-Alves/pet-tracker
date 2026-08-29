@@ -1,0 +1,38 @@
+<% content_for :title, @pet.name %>
+<section class="pet-hero">
+  <% if @pet.photo.attached? %>
+    <%= image_tag @pet.photo.variant(resize_to_fill: [240, 240]), class: "pet-photo", alt: @pet.name %>
+  <% else %>
+    <div class="pet-photo pet-photo-placeholder" aria-hidden="true">🐾</div>
+  <% end %>
+  <div>
+    <p class="eyebrow"><%= @pet.species %><%= " · #{@pet.breed}" if @pet.breed.present? %></p>
+    <h1><%= @pet.name %></h1>
+    <p class="muted"><%= @pet.time_zone %></p>
+    <%= link_to "Edit profile", edit_pet_path(@pet), class: "button button-secondary" %>
+  </div>
+</section>
+
+<section class="dashboard-section">
+  <div class="section-heading">
+    <div>
+      <p class="eyebrow">Daily routine</p>
+      <h2>Meal schedule</h2>
+    </div>
+    <%= link_to "Manage schedule", pet_meal_slots_path(@pet) %>
+  </div>
+  <% if @pet.meal_slots.active.any? %>
+    <div class="compact-slots">
+      <% @pet.meal_slots.active.chronological.each do |slot| %>
+        <span><strong><%= slot.scheduled_time.strftime("%H:%M") %></strong> <%= slot.name %> · <%= number_with_precision(slot.default_amount_g, precision: 0, strip_insignificant_zeros: true) %> g</span>
+      <% end %>
+    </div>
+    <div class="dashboard-actions">
+      <%= link_to "Log now", new_pet_meal_log_path(@pet), class: "button button-primary button-fit" %>
+      <%= link_to "View history", pet_meal_logs_path(@pet), class: "button button-secondary" %>
+    </div>
+  <% else %>
+    <p class="muted">No feeding times yet.</p>
+    <%= link_to "Set up meals", new_pet_meal_slot_path(@pet), class: "button button-primary button-fit" %>
+  <% end %>
+</section>

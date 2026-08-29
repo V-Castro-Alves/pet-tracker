@@ -1,0 +1,12 @@
+one:
+  name: Pepper
+  species: Dog
+  breed: Mutt
+  qr_token: pepper-token
+  time_zone: UTC
+
+two:
+  name: Luna
+  species: Cat
+  qr_token: luna-token
+  time_zone: UTC

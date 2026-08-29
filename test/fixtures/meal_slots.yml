@@ -1,0 +1,20 @@
+breakfast:
+  pet: one
+  name: Breakfast
+  scheduled_time: "08:00:00"
+  default_amount_g: 100
+  active: true
+
+dinner:
+  pet: one
+  name: Dinner
+  scheduled_time: "18:00:00"
+  default_amount_g: 120
+  active: true
+
+other_pet_breakfast:
+  pet: two
+  name: Breakfast
+  scheduled_time: "08:00:00"
+  default_amount_g: 80
+  active: true
