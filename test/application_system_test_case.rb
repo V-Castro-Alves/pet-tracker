@@ -8,12 +8,14 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
   end
 
   private
-    def type_into(selector, value)
+    def type_into(selector, value, replace: false)
       field = find(selector)
       if Capybara.current_driver == :rack_test
         field.set(value)
+      elsif replace
+        field.send_keys(:control, "a", :null, :backspace, value)
       else
-        field.send_keys([ :control, "a" ], :backspace, value)
+        field.send_keys(value)
       end
     end
 

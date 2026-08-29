@@ -12,7 +12,7 @@ class MealLogsTest < ApplicationSystemTestCase
 
     assert_text "Log Dinner"
     select "Fed", from: "Status"
-    type_into "#meal_log_actual_amount_g", "125"
+    type_into "#meal_log_actual_amount_g", "125", replace: true
     assert_field "meal_log_actual_amount_g", with: "125"
 
     assert_difference "MealLog.count", 1 do
