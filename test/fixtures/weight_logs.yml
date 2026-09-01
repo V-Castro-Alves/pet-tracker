@@ -1,0 +1,10 @@
+pepper_older:
+  pet: one
+  weight_kg: 12.5
+  logged_at: 2026-07-01
+  note: Summer check
+
+pepper_latest:
+  pet: one
+  weight_kg: 12.8
+  logged_at: 2026-08-01

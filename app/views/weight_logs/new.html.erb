@@ -1,0 +1,2 @@
+<% content_for :title, "Add #{@pet.name}'s weight" %>
+<section class="content-card"><p class="eyebrow"><%= @pet.name %>'s health</p><h1>Add weight</h1><%= render "form", pet: @pet, weight_log: @weight_log %></section>

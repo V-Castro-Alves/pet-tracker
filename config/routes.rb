@@ -14,6 +14,9 @@ Rails.application.routes.draw do
     end
     resources :pet_users, only: %i[index destroy]
     resources :pet_invites, only: %i[create destroy]
+    resources :weight_logs, except: :show
+    resources :vaccines, except: :show
+    resources :medical_entries, except: :show
   end
 
   get "meal_log/:qr_token", to: "qr_meal_logs#show", as: :qr_meal_log

@@ -1,0 +1,18 @@
+<% content_for :title, "#{@pet.name}'s weight" %>
+<section class="page-header"><div><p class="eyebrow"><%= link_to @pet.name, @pet %></p><h1>Weight</h1></div><%= link_to "Add weight", new_pet_weight_log_path(@pet), class: "button button-primary button-fit" %></section>
+
+<% if @weight_logs.any? %>
+  <section class="dashboard-section weight-chart-card">
+    <h2>Trend</h2>
+    <svg class="weight-chart" viewBox="0 0 600 180" role="img" aria-label="Weight trend from <%= @weight_logs.minimum(:logged_at) %> to <%= @weight_logs.maximum(:logged_at) %>">
+      <polyline points="<%= weight_chart_points(@weight_logs) %>" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+  </section>
+  <div class="history-list page-action">
+    <% @weight_logs.each do |log| %>
+      <article class="record-row"><div><strong><%= number_with_precision(log.weight_kg, precision: 2, strip_insignificant_zeros: true) %> kg</strong><p><%= l log.logged_at, format: :long %><%= " · #{log.note}" if log.note.present? %></p></div><div class="record-actions"><%= link_to "Edit", edit_pet_weight_log_path(@pet, log) %><%= button_to "Delete", pet_weight_log_path(@pet, log), method: :delete, class: "link-button danger-link", form: { data: { turbo_confirm: "Delete this weight entry?" } } %></div></article>
+    <% end %>
+  </div>
+<% else %>
+  <section class="empty-state"><div class="empty-state-icon" aria-hidden="true">⚖️</div><h2>No weight entries yet</h2><p>Add a measurement to begin tracking <%= @pet.name %>'s trend.</p><%= link_to "Add first weight", new_pet_weight_log_path(@pet), class: "button button-primary button-fit" %></section>
+<% end %>

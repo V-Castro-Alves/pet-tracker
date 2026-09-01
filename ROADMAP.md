@@ -18,7 +18,7 @@ This file is the durable source of implementation milestone status. Product beha
   - Printable/downloadable SVG, login return flow, membership enforcement, administrator-only regeneration, and browser coverage.
 - [x] Invitations and linked-user management
   - Expiring single-use invites, acceptance through authentication, administrator removal, and safe self-unlinking.
-- [ ] Weight, vaccine, and medical records
+- [ ] **In progress:** Weight, vaccine, and medical records
   - CRUD screens, dashboard summaries, due-state helpers, and weight trend presentation.
 - [ ] Background jobs and notifications
   - Idempotent meal, food, and vaccine events followed by push subscription and delivery support.

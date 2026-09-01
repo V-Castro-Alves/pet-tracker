@@ -1,0 +1,11 @@
+<%= form_with model: [pet, vaccine] do |form| %>
+  <%= render "shared/form_errors", record: vaccine %>
+  <div class="form-grid">
+    <div class="field"><%= form.label :name %><%= form.text_field :name, required: true, autofocus: true, placeholder: "Rabies" %></div>
+    <div class="field"><%= form.label :clinic, "Vet or clinic" %><%= form.text_field :clinic %></div>
+    <div class="field"><%= form.label :date_given %><%= form.date_field :date_given, required: true, max: Date.current %></div>
+    <div class="field"><%= form.label :next_due_date, "Next due date (optional)" %><%= form.date_field :next_due_date %></div>
+  </div>
+  <div class="field"><%= form.label :notes %><%= form.text_area :notes, rows: 4 %></div>
+  <%= form.submit class: "button button-primary button-fit" %>
+<% end %>

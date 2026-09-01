@@ -1,0 +1,11 @@
+overdue:
+  pet: one
+  name: Rabies
+  date_given: 2025-08-01
+  next_due_date: 2026-08-01
+  clinic: Green Paws
+
+one_time:
+  pet: one
+  name: Initial screening
+  date_given: 2026-07-01

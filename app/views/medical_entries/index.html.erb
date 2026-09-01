@@ -1,0 +1,12 @@
+<% content_for :title, "#{@pet.name}'s medical history" %>
+<section class="page-header"><div><p class="eyebrow"><%= link_to @pet.name, @pet %></p><h1>Medical history</h1></div><%= link_to "Add entry", new_pet_medical_entry_path(@pet), class: "button button-primary button-fit" %></section>
+
+<% if @medical_entries.any? %>
+  <div class="timeline">
+    <% @medical_entries.each do |entry| %>
+      <article class="timeline-entry"><time datetime="<%= entry.entry_date.iso8601 %>"><%= l entry.entry_date, format: :long %></time><h2><%= entry.title.presence || "Medical note" %></h2><%= simple_format entry.body %><p class="record-byline">Added by <%= entry.created_by.name %></p><div class="record-actions"><%= link_to "Edit", edit_pet_medical_entry_path(@pet, entry) %><%= button_to "Delete", pet_medical_entry_path(@pet, entry), method: :delete, class: "link-button danger-link", form: { data: { turbo_confirm: "Delete this medical entry?" } } %></div></article>
+    <% end %>
+  </div>
+<% else %>
+  <section class="empty-state"><div class="empty-state-icon" aria-hidden="true">🩺</div><h2>No medical entries yet</h2><p>Keep a simple chronological record of visits, symptoms, and treatments.</p><%= link_to "Add first entry", new_pet_medical_entry_path(@pet), class: "button button-primary button-fit" %></section>
+<% end %>

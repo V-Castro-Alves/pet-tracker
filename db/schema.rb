@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_01_200000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
@@ -85,6 +85,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_190000) do
     t.index ["pet_id"], name: "index_meal_slots_on_pet_id"
   end
 
+  create_table "medical_entries", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.integer "created_by_id", null: false
+    t.date "entry_date", null: false
+    t.integer "pet_id", null: false
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["created_by_id"], name: "index_medical_entries_on_created_by_id"
+    t.index ["pet_id", "entry_date"], name: "index_medical_entries_on_pet_id_and_entry_date"
+    t.index ["pet_id"], name: "index_medical_entries_on_pet_id"
+  end
+
   create_table "pet_invites", force: :cascade do |t|
     t.datetime "accepted_at"
     t.integer "accepted_by_id"
@@ -147,6 +160,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_190000) do
     t.index ["email_address"], name: "index_users_on_email_address", unique: true
   end
 
+  create_table "vaccines", force: :cascade do |t|
+    t.string "clinic"
+    t.datetime "created_at", null: false
+    t.date "date_given", null: false
+    t.string "name", null: false
+    t.date "next_due_date"
+    t.text "notes"
+    t.integer "pet_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["pet_id", "next_due_date"], name: "index_vaccines_on_pet_id_and_next_due_date"
+    t.index ["pet_id"], name: "index_vaccines_on_pet_id"
+  end
+
+  create_table "weight_logs", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "logged_at", null: false
+    t.text "note"
+    t.integer "pet_id", null: false
+    t.datetime "updated_at", null: false
+    t.decimal "weight_kg", precision: 7, scale: 2, null: false
+    t.index ["pet_id", "logged_at"], name: "index_weight_logs_on_pet_id_and_logged_at", unique: true
+    t.index ["pet_id"], name: "index_weight_logs_on_pet_id"
+    t.check_constraint "weight_kg > 0", name: "weight_logs_positive_weight"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "food_bags", "pets"
@@ -155,10 +193,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_190000) do
   add_foreign_key "meal_logs", "pets"
   add_foreign_key "meal_logs", "users", column: "logged_by_user_id"
   add_foreign_key "meal_slots", "pets"
+  add_foreign_key "medical_entries", "pets"
+  add_foreign_key "medical_entries", "users", column: "created_by_id"
   add_foreign_key "pet_invites", "pets"
   add_foreign_key "pet_invites", "users", column: "accepted_by_id"
   add_foreign_key "pet_invites", "users", column: "created_by_id"
   add_foreign_key "pet_users", "pets"
   add_foreign_key "pet_users", "users"
   add_foreign_key "sessions", "users"
+  add_foreign_key "vaccines", "pets"
+  add_foreign_key "weight_logs", "pets"
 end

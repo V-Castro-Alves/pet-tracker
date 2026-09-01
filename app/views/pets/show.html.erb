@@ -15,6 +15,22 @@
   </div>
 </section>
 
+<section class="health-grid page-action">
+  <article class="dashboard-section">
+    <div class="section-heading"><div><p class="eyebrow">Health</p><h2>Weight</h2></div><%= link_to "History", pet_weight_logs_path(@pet) %></div>
+    <% if (weight = @pet.weight_logs.chronological.first) %><p><strong><%= number_with_precision(weight.weight_kg, precision: 2, strip_insignificant_zeros: true) %> kg</strong><br><span class="muted"><%= l weight.logged_at, format: :long %></span></p><% else %><p class="muted">No weight recorded.</p><% end %>
+  </article>
+  <article class="dashboard-section">
+    <div class="section-heading"><div><p class="eyebrow">Health</p><h2>Vaccines</h2></div><%= link_to "Records", pet_vaccines_path(@pet) %></div>
+    <% alert_vaccines = @pet.vaccines.select { |vaccine| vaccine.due_status.in?(%i[due_soon overdue]) } %>
+    <% if alert_vaccines.any? %><p><strong><%= pluralize(alert_vaccines.count, "vaccine") %> need attention</strong></p><% else %><p class="muted">No upcoming vaccine alerts.</p><% end %>
+  </article>
+  <article class="dashboard-section">
+    <div class="section-heading"><div><p class="eyebrow">Health</p><h2>Medical history</h2></div><%= link_to "Journal", pet_medical_entries_path(@pet) %></div>
+    <% if (entry = @pet.medical_entries.chronological.first) %><p><strong><%= entry.title.presence || "Medical note" %></strong><br><span class="muted"><%= l entry.entry_date, format: :long %></span></p><% else %><p class="muted">No medical entries.</p><% end %>
+  </article>
+</section>
+
 <section class="dashboard-section page-action">
   <div class="section-heading">
     <div><p class="eyebrow">Supplies</p><h2>Food inventory</h2></div>

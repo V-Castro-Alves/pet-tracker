@@ -1,0 +1,9 @@
+<%= form_with model: [pet, medical_entry] do |form| %>
+  <%= render "shared/form_errors", record: medical_entry %>
+  <div class="form-grid">
+    <div class="field"><%= form.label :entry_date, "Date" %><%= form.date_field :entry_date, required: true, max: Date.current %></div>
+    <div class="field"><%= form.label :title, "Title (optional)" %><%= form.text_field :title, autofocus: true, placeholder: "Annual checkup" %></div>
+  </div>
+  <div class="field"><%= form.label :body, "Details" %><%= form.text_area :body, rows: 8, required: true %></div>
+  <%= form.submit class: "button button-primary button-fit" %>
+<% end %>

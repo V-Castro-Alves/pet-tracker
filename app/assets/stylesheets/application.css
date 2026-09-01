@@ -126,6 +126,25 @@ textarea { resize: vertical; }
 .membership-row:last-child { border-bottom: 0; }
 .membership-row > :first-child { flex: 1; min-width: 0; }
 .membership-row p { margin: 0.2rem 0 0; overflow-wrap: anywhere; color: var(--muted); }
+.health-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.record-row { display: flex; align-items: flex-start; gap: 1rem; padding: 1rem 1.25rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); }
+.record-row > :first-child { flex: 1; }
+.record-row p { margin: 0.25rem 0 0; color: var(--muted); }
+.record-actions { display: flex; align-items: center; gap: 1rem; }
+.record-title { display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem; }
+.record-notes { color: var(--ink) !important; }
+.vaccine-overdue { border-color: #d98d8d; }
+.vaccine-overdue .status-badge { color: #742323; background: #fde9e7; }
+.vaccine-due_soon { border-color: #e1b86f; }
+.vaccine-due_soon .status-badge { color: #6e4510; background: #fff0ce; }
+.weight-chart-card { color: var(--primary); }
+.weight-chart-card h2 { color: var(--ink); }
+.weight-chart { display: block; width: 100%; max-height: 14rem; }
+.timeline { position: relative; display: grid; gap: 1rem; margin-left: 0.5rem; padding-left: 1.5rem; border-left: 3px solid #cfe1d6; }
+.timeline-entry { position: relative; padding: 1.25rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); }
+.timeline-entry::before { position: absolute; top: 1.4rem; left: -2.08rem; width: 0.8rem; height: 0.8rem; content: ""; border: 3px solid var(--canvas); border-radius: 50%; background: var(--primary); }
+.timeline-entry time, .record-byline { color: var(--muted); font-size: 0.9rem; }
+.timeline-entry h2 { margin: 0.35rem 0 0.75rem; }
 
 @media print {
   body { background: white; }
@@ -149,4 +168,6 @@ textarea { resize: vertical; }
   .filter-bar { align-items: stretch; flex-direction: column; }
   .history-row { grid-template-columns: auto 1fr; }
   .history-row > :last-child { grid-column: 2; }
+  .health-grid { grid-template-columns: 1fr; }
+  .record-row { flex-direction: column; }
 }

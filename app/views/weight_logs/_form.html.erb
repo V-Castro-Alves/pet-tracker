@@ -1,0 +1,9 @@
+<%= form_with model: [pet, weight_log] do |form| %>
+  <%= render "shared/form_errors", record: weight_log %>
+  <div class="form-grid">
+    <div class="field"><%= form.label :weight_kg, "Weight (kg)" %><%= form.number_field :weight_kg, required: true, min: 0.01, step: 0.01, inputmode: "decimal" %></div>
+    <div class="field"><%= form.label :logged_at, "Date" %><%= form.date_field :logged_at, required: true, max: Date.current %></div>
+  </div>
+  <div class="field"><%= form.label :note %><%= form.text_area :note, rows: 4 %></div>
+  <%= form.submit class: "button button-primary button-fit" %>
+<% end %>

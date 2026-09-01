@@ -1,0 +1,15 @@
+<% content_for :title, "#{@pet.name}'s vaccines" %>
+<section class="page-header"><div><p class="eyebrow"><%= link_to @pet.name, @pet %></p><h1>Vaccines</h1></div><%= link_to "Add vaccine", new_pet_vaccine_path(@pet), class: "button button-primary button-fit" %></section>
+
+<% if @vaccines.any? %>
+  <div class="history-list">
+    <% @vaccines.each do |vaccine| %>
+      <article class="record-row vaccine-<%= vaccine.due_status %>">
+        <div><div class="record-title"><strong><%= vaccine.name %></strong><span class="status-badge"><%= vaccine.due_status.to_s.humanize %></span></div><p>Given <%= l vaccine.date_given, format: :long %><%= " · #{vaccine.clinic}" if vaccine.clinic.present? %></p><p><%= vaccine.next_due_date ? "Next due #{l vaccine.next_due_date, format: :long}" : "No repeat due date" %></p><%= simple_format vaccine.notes, class: "record-notes" if vaccine.notes.present? %></div>
+        <div class="record-actions"><%= link_to "Edit", edit_pet_vaccine_path(@pet, vaccine) %><%= button_to "Delete", pet_vaccine_path(@pet, vaccine), method: :delete, class: "link-button danger-link", form: { data: { turbo_confirm: "Delete #{vaccine.name}?" } } %></div>
+      </article>
+    <% end %>
+  </div>
+<% else %>
+  <section class="empty-state"><div class="empty-state-icon" aria-hidden="true">💉</div><h2>No vaccine records yet</h2><p>Add the dates provided by your veterinarian.</p><%= link_to "Add first vaccine", new_pet_vaccine_path(@pet), class: "button button-primary button-fit" %></section>
+<% end %>
