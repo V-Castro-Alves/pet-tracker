@@ -14,6 +14,7 @@
     <% if @meal_log&.errors&.any? %><%= render "shared/form_errors", record: @meal_log %><% end %>
     <%= form.hidden_field :meal_slot_id, value: @occurrence.meal_slot.id %>
     <%= form.hidden_field :scheduled_for, value: @occurrence.scheduled_for.iso8601 %>
+    <%= hidden_field_tag :source, @source || params[:source] if (@source || params[:source]).present? %>
     <%= hidden_field_tag :allow_duplicate, "1" if @duplicate %>
 
     <div class="field">

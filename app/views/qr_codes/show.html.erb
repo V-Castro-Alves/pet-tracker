@@ -1,0 +1,30 @@
+<% content_for :title, "#{@pet.name}'s meal QR code" %>
+<% content_for :head do %>
+  <meta name="turbo-cache-control" content="no-cache">
+<% end %>
+
+<section class="qr-sheet">
+  <div class="qr-print-header">
+    <p class="eyebrow">Pet Tracker</p>
+    <h1>Log <%= @pet.name %>'s meal</h1>
+    <p>Scan with your phone, sign in, and confirm the meal.</p>
+  </div>
+
+  <div class="qr-image" aria-label="QR code for <%= @pet.name %>'s meal log">
+    <%= sanitize @qr_svg, tags: %w[svg path rect], attributes: %w[xmlns width height viewBox fill d shape-rendering] %>
+  </div>
+  <p class="qr-url"><%= @meal_log_url %></p>
+
+  <div class="qr-actions no-print">
+    <%= link_to "Download SVG", download_pet_qr_code_path(@pet), class: "button button-secondary" %>
+    <button type="button" class="button button-primary button-fit" onclick="window.print()">Print QR code</button>
+  </div>
+</section>
+
+<% if @pet.administered_by?(Current.user) %>
+  <section class="danger-zone no-print">
+    <h2>Replace this QR code</h2>
+    <p>Regenerating immediately invalidates every existing printout for <%= @pet.name %>.</p>
+    <%= button_to "Regenerate QR code", regenerate_pet_qr_code_path(@pet), method: :patch, class: "button button-danger", form: { data: { turbo_confirm: "Generate a new code? The old QR code will stop working immediately." } } %>
+  </section>
+<% end %>

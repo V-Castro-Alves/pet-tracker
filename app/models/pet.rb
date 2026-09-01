@@ -12,6 +12,10 @@ class Pet < ApplicationRecord
     food_bags.active.first
   end
 
+  def administered_by?(user)
+    pet_users.exists?(user: user, is_pet_admin: true)
+  end
+
   def average_daily_consumption_g(since: 30.days.ago)
     logs = meal_logs.fed.where(actual_time: since..).group_by { |log| log.actual_time.in_time_zone(time_zone).to_date }
     return 0.to_d if logs.empty?

@@ -8,7 +8,13 @@ Rails.application.routes.draw do
     resources :food_bags, only: %i[index new create] do
       patch :finish, on: :member
     end
+    resource :qr_code, only: :show, controller: :qr_codes do
+      get :download
+      patch :regenerate
+    end
   end
+
+  get "meal_log/:qr_token", to: "qr_meal_logs#show", as: :qr_meal_log
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

@@ -50,6 +50,8 @@ Make sure you have the following installed on your machine:
 - **Ruby** (v3.4.10)
 - **SQLite3**
 - **Bundler**
+- **libvips** (required for Active Storage image processing)
+- **Google Chrome or Chromium** (required for system tests)
 
 ### Development Setup
 
@@ -79,15 +81,81 @@ Make sure you have the following installed on your machine:
 
 ## 🧪 Testing
 
-To run the test suite (models, controllers, integration, and system tests):
+Run checks locally before pushing, then use GitHub Actions as the final clean-environment verification. Run the commands below sequentially because the Rails and system test suites share the same SQLite test database.
+
+### 1. Install dependencies
+
+After cloning the repository or changing `Gemfile.lock`:
+
+```bash
+bundle install
+```
+
+On Ubuntu or WSL, install the native image-processing library with:
+
+```bash
+sudo apt update
+sudo apt install --no-install-recommends libvips
+```
+
+### 2. Run linting
+
+```bash
+bin/rubocop
+```
+
+### 3. Prepare the test database
+
+```bash
+RAILS_ENV=test bin/rails db:test:prepare
+```
+
+### 4. Run the Rails test suite
+
+This covers model, service, controller, and integration tests:
+
 ```bash
 bin/rails test
 ```
 
-For static style checking and security scanning:
+### 5. Run browser system tests
+
+This launches headless Chrome and tests complete user-visible flows:
+
 ```bash
+bin/rails test:system
+```
+
+Chrome or Chromium and its matching driver must be available. Selenium Manager normally downloads and caches the correct driver automatically.
+
+### 6. Run security checks
+
+```bash
+bin/brakeman --no-pager
+bin/bundler-audit
+bin/importmap audit
+```
+
+### Focused tests during development
+
+Run the smallest relevant test while developing, then run all affected suites before pushing. For example:
+
+```bash
+bin/rails test test/controllers/pets_controller_test.rb
+bin/rails test test/system/pets_test.rb
+```
+
+### Complete pre-push checklist
+
+```bash
+bundle check
 bin/rubocop
-bin/brakeman
+RAILS_ENV=test bin/rails db:test:prepare
+bin/rails test
+bin/rails test:system
+bin/brakeman --no-pager
+bin/bundler-audit
+bin/importmap audit
 ```
 
 ---

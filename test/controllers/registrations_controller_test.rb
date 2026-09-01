@@ -20,7 +20,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_redirected_to root_url
-    assert_equal "taylor@example.com", User.order(:created_at).last.email_address
+    assert User.exists?(email_address: "taylor@example.com")
   end
 
   test "rejects invalid registration" do

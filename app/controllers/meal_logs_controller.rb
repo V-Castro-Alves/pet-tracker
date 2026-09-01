@@ -29,16 +29,19 @@ class MealLogsController < ApplicationController
       attributes: attributes,
       allow_duplicate: params[:allow_duplicate] == "1"
     ).call
-    redirect_to pet_meal_logs_path(@pet), notice: "#{@meal_slot.name} was logged."
+    destination = params[:source] == "qr" ? pet_path(@pet) : pet_meal_logs_path(@pet)
+    redirect_to destination, notice: "#{@meal_slot.name} was logged."
   rescue Meals::LogMeal::DuplicateMealError => error
     @duplicate = error.existing_log
     @occurrence = Meals::OccurrenceFinder::Occurrence.new(meal_slot: @meal_slot, scheduled_for: attributes[:scheduled_for])
     @form_values = meal_log_params
+    @source = params[:source]
     render :new, status: :unprocessable_entity
   rescue ActiveRecord::RecordInvalid => error
     @meal_log = error.record
     @occurrence = Meals::OccurrenceFinder::Occurrence.new(meal_slot: @meal_slot, scheduled_for: attributes[:scheduled_for])
     @form_values = meal_log_params
+    @source = params[:source]
     render :new, status: :unprocessable_entity
   end
 

@@ -10,6 +10,7 @@
     <h1><%= @pet.name %></h1>
     <p class="muted"><%= @pet.time_zone %></p>
     <%= link_to "Edit profile", edit_pet_path(@pet), class: "button button-secondary" %>
+    <%= link_to "Meal QR code", pet_qr_code_path(@pet), class: "button button-secondary" %>
   </div>
 </section>
 
