@@ -10,6 +10,8 @@ The README and specification files describe both implemented and planned feature
 
 ## Working conventions
 
+- Treat `ROADMAP.md` as the durable source of milestone status. Update it when a milestone starts, completes, or materially changes scope; do not rely only on conversation state.
+- When work reveals an important, durable project constraint, convention, pitfall, or verification requirement that would help future contributors, add it to this `AGENTS.md` in the appropriate section. Keep additions concise and repository-specific rather than recording temporary session details.
 - Use project binstubs (`bin/rails`, `bin/rubocop`, and the other scripts in `bin/`) instead of global commands.
 - Keep controllers focused on HTTP concerns. Put non-trivial meal-domain behavior under `app/services/meals` and persistence rules in models.
 - Scope pet-owned records through `Current.user.pets`; do not bypass authorization with unscoped finds in application code.
@@ -23,6 +25,7 @@ The README and specification files describe both implemented and planned feature
 - Create schema changes with Rails migrations and commit both the migration and updated `db/schema.rb`.
 - Preserve foreign keys, indexes, and database-level null constraints where appropriate.
 - The application uses SQLite in development and test. Do not run multiple test commands concurrently against `storage/test.sqlite3`; doing so can produce `SQLite3::BusyException` errors.
+- Once the test count reaches Rails' parallelization threshold, use `PARALLEL_WORKERS=1` for local full-suite runs to keep SQLite execution sequential.
 
 ## Tests
 
@@ -65,3 +68,8 @@ Before handing off, report which checks passed and clearly identify anything tha
 - Dependabot monitors Bundler and GitHub Actions dependencies weekly through `.github/dependabot.yml`.
 - Treat major dependency upgrades cautiously. Review release notes and test the affected feature directly, especially Active Storage/image-processing changes.
 - Do not merge or recommend merging dependency updates while required checks on the target branch are failing.
+
+## Tooling notes
+
+- `bin/brakeman` forces an online latest-version check and may fail in restricted or offline environments before scanning. If that happens, run `bundle exec brakeman --no-pager` and report the binstub limitation.
+- If the home directory is read-only, point Bundler Audit's advisory database at a writable temporary path with `--database`; do not repurpose `HOME`.
