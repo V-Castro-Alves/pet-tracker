@@ -16,6 +16,8 @@ The README and specification files describe both implemented and planned feature
 - Keep controllers focused on HTTP concerns. Put non-trivial meal-domain behavior under `app/services/meals` and persistence rules in models.
 - Scope pet-owned records through `Current.user.pets`; do not bypass authorization with unscoped finds in application code.
 - Preserve the application's time-zone behavior. Scheduled occurrences use the pet's time zone, while users also have their own configured time zone.
+- A pet must always retain at least one caretaker and one administrator. When an administrator unlinks themselves and other caretakers remain, promote the longest-linked remaining caretaker; keep membership removal transactional.
+- Pet invitations are single-use, expire after seven days, and may optionally be restricted to a normalized email address. Preserve the protected-destination return flow through both sign-in and registration.
 - Use strong parameters through Rails `params.expect` conventions already present in the controllers.
 - Prefer the existing Hotwire/server-rendered approach over introducing a separate frontend framework.
 - Do not edit unrelated user changes or generated dependency files unless the task requires it.

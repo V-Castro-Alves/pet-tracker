@@ -12,9 +12,13 @@ Rails.application.routes.draw do
       get :download
       patch :regenerate
     end
+    resources :pet_users, only: %i[index destroy]
+    resources :pet_invites, only: %i[create destroy]
   end
 
   get "meal_log/:qr_token", to: "qr_meal_logs#show", as: :qr_meal_log
+  get "invites/:token", to: "invitations#show", as: :invitation
+  post "invites/:token", to: "invitations#create"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

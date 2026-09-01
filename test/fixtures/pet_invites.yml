@@ -1,0 +1,19 @@
+pending:
+  pet: one
+  invite_token: pending-invite-token
+  invited_email: guest@example.com
+  created_by: one
+  expires_at: <%= 3.days.from_now %>
+
+shareable:
+  pet: one
+  invite_token: shareable-invite-token
+  created_by: one
+  expires_at: <%= 3.days.from_now %>
+
+expired:
+  pet: one
+  invite_token: expired-invite-token
+  invited_email: two@example.com
+  created_by: one
+  expires_at: <%= 1.day.ago %>

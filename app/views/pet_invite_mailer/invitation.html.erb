@@ -1,0 +1,4 @@
+<h1>Help care for <%= @invite.pet.name %></h1>
+<p><%= @invite.created_by.name %> invited you to join <%= @invite.pet.name %>'s care team in Pet Tracker.</p>
+<p><%= link_to "Accept invitation", invitation_url(@invite.invite_token) %></p>
+<p>This invitation expires on <%= l @invite.expires_at, format: :long %>.</p>

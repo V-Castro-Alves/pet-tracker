@@ -1,0 +1,16 @@
+<% content_for :title, "Invitation to care for #{@invite.pet.name}" %>
+<section class="auth-card invitation-card">
+  <p class="eyebrow">Care together</p>
+  <h1>Join <%= @invite.pet.name %>'s care team</h1>
+  <p><strong><%= @invite.created_by.name %></strong> invited you to help track meals, supplies, and health records.</p>
+
+  <% if @invite.accepted? %>
+    <p class="muted">This invitation has already been accepted.</p>
+  <% elsif @invite.expired? %>
+    <p class="form-errors">This invitation has expired. Ask the pet administrator for a new link.</p>
+  <% elsif !@invite.available_to?(Current.user) %>
+    <p class="form-errors">This invitation is for <%= @invite.invited_email %>. Sign in with that address to accept it.</p>
+  <% else %>
+    <%= button_to "Join #{@invite.pet.name}'s team", invitation_path(@invite.invite_token), method: :post, class: "button button-primary" %>
+  <% end %>
+</section>

@@ -121,6 +121,11 @@ textarea { resize: vertical; }
 .qr-image svg { display: block; width: 100%; height: auto; }
 .qr-url { overflow-wrap: anywhere; color: var(--muted); font-size: 0.8rem; }
 .qr-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 0.75rem; margin-top: 1.5rem; }
+.membership-list { display: grid; gap: 0.75rem; }
+.membership-row { display: flex; align-items: center; gap: 1rem; padding: 0.9rem 0; border-bottom: 1px solid var(--border); }
+.membership-row:last-child { border-bottom: 0; }
+.membership-row > :first-child { flex: 1; min-width: 0; }
+.membership-row p { margin: 0.2rem 0 0; overflow-wrap: anywhere; color: var(--muted); }
 
 @media print {
   body { background: white; }

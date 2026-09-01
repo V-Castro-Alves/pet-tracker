@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_29_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_01_190000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
@@ -85,6 +85,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_180000) do
     t.index ["pet_id"], name: "index_meal_slots_on_pet_id"
   end
 
+  create_table "pet_invites", force: :cascade do |t|
+    t.datetime "accepted_at"
+    t.integer "accepted_by_id"
+    t.datetime "created_at", null: false
+    t.integer "created_by_id", null: false
+    t.datetime "expires_at", null: false
+    t.string "invite_token", null: false
+    t.string "invited_email"
+    t.integer "pet_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["accepted_by_id"], name: "index_pet_invites_on_accepted_by_id"
+    t.index ["created_by_id"], name: "index_pet_invites_on_created_by_id"
+    t.index ["invite_token"], name: "index_pet_invites_on_invite_token", unique: true
+    t.index ["pet_id", "expires_at"], name: "index_pet_invites_on_pet_id_and_expires_at"
+    t.index ["pet_id"], name: "index_pet_invites_on_pet_id"
+  end
+
   create_table "pet_users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.boolean "is_pet_admin", default: false, null: false
@@ -138,6 +155,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_29_180000) do
   add_foreign_key "meal_logs", "pets"
   add_foreign_key "meal_logs", "users", column: "logged_by_user_id"
   add_foreign_key "meal_slots", "pets"
+  add_foreign_key "pet_invites", "pets"
+  add_foreign_key "pet_invites", "users", column: "accepted_by_id"
+  add_foreign_key "pet_invites", "users", column: "created_by_id"
   add_foreign_key "pet_users", "pets"
   add_foreign_key "pet_users", "users"
   add_foreign_key "sessions", "users"

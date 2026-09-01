@@ -1,0 +1,45 @@
+<% content_for :title, "#{@pet.name}'s caretakers" %>
+<section class="page-header">
+  <div><p class="eyebrow"><%= link_to @pet.name, @pet %></p><h1>Caretakers</h1></div>
+</section>
+
+<section class="dashboard-section">
+  <div class="membership-list">
+    <% @memberships.each do |membership| %>
+      <article class="membership-row">
+        <div><strong><%= membership.user.name %><%= " (you)" if membership.user == Current.user %></strong><p><%= membership.user.email_address %></p></div>
+        <span class="status-badge"><%= membership.is_pet_admin? ? "Administrator" : "Caretaker" %></span>
+        <% if membership.user == Current.user || @pet.administered_by?(Current.user) %>
+          <%= button_to membership.user == Current.user ? "Leave" : "Remove", pet_pet_user_path(@pet, membership), method: :delete, class: "link-button danger-link", form: { data: { turbo_confirm: "Remove #{membership.user.name}'s access to #{@pet.name}?" } } %>
+        <% end %>
+      </article>
+    <% end %>
+  </div>
+</section>
+
+<% if @pet.administered_by?(Current.user) %>
+  <section class="content-card page-action">
+    <p class="eyebrow">Invite someone</p>
+    <h2>Create an invitation</h2>
+    <p class="muted">Enter an email to send the link, or leave it blank to create a shareable link. Links expire after seven days.</p>
+    <%= form_with model: [@pet, @invite] do |form| %>
+      <%= render "shared/form_errors", record: @invite %>
+      <div class="field"><%= form.label :invited_email, "Email (optional)" %><%= form.email_field :invited_email, autocomplete: "email" %></div>
+      <%= form.submit "Create invitation", class: "button button-primary button-fit" %>
+    <% end %>
+  </section>
+
+  <% if @pending_invites.any? %>
+    <section class="dashboard-section page-action">
+      <h2>Pending invitations</h2>
+      <div class="membership-list">
+        <% @pending_invites.each do |invite| %>
+          <article class="membership-row">
+            <div><strong><%= invite.invited_email.presence || "Shareable invitation" %></strong><p><%= invitation_url(invite.invite_token) %><br>Expires <%= l invite.expires_at, format: :short %></p></div>
+            <%= button_to "Revoke", pet_pet_invite_path(@pet, invite), method: :delete, class: "link-button danger-link" %>
+          </article>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+<% end %>

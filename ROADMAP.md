@@ -16,7 +16,7 @@ This file is the durable source of implementation milestone status. Product beha
   - Active bag lifecycle, transactional consumption, low-stock state, remaining-day estimates, and bag history.
 - [x] QR-code meal entry
   - Printable/downloadable SVG, login return flow, membership enforcement, administrator-only regeneration, and browser coverage.
-- [ ] Invitations and linked-user management
+- [x] Invitations and linked-user management
   - Expiring single-use invites, acceptance through authentication, administrator removal, and safe self-unlinking.
 - [ ] Weight, vaccine, and medical records
   - CRUD screens, dashboard summaries, due-state helpers, and weight trend presentation.
@@ -27,10 +27,10 @@ This file is the durable source of implementation milestone status. Product beha
 
 ## Current verification baseline
 
-After the QR milestone:
+After the invitations milestone:
 
-- Model/controller/service suite: 54 tests, 149 assertions, all passing.
-- Headless-Chrome system suite: 4 tests, 25 assertions, all passing.
+- Model/controller/service suite: 75 tests, 203 assertions, all passing.
+- Headless-Chrome system suite: 5 tests, 29 assertions, all passing.
 - RuboCop, Brakeman, Bundler Audit, Importmap Audit, and `git diff --check` pass.
 
 Update these counts only after a complete verification run; focused test results do not replace the baseline.
