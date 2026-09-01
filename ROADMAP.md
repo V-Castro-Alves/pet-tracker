@@ -18,7 +18,7 @@ This file is the durable source of implementation milestone status. Product beha
   - Printable/downloadable SVG, login return flow, membership enforcement, administrator-only regeneration, and browser coverage.
 - [x] Invitations and linked-user management
   - Expiring single-use invites, acceptance through authentication, administrator removal, and safe self-unlinking.
-- [ ] **In progress:** Weight, vaccine, and medical records
+- [x] Weight, vaccine, and medical records
   - CRUD screens, dashboard summaries, due-state helpers, and weight trend presentation.
 - [ ] Background jobs and notifications
   - Idempotent meal, food, and vaccine events followed by push subscription and delivery support.
@@ -27,10 +27,10 @@ This file is the durable source of implementation milestone status. Product beha
 
 ## Current verification baseline
 
-After the invitations milestone:
+After the health-record milestone:
 
-- Model/controller/service suite: 75 tests, 203 assertions, all passing.
-- Headless-Chrome system suite: 5 tests, 29 assertions, all passing.
+- Model/controller/service suite: 92 tests, 237 assertions, all passing.
+- Headless-Chrome system suite: 6 tests, 34 assertions, all passing.
 - RuboCop, Brakeman, Bundler Audit, Importmap Audit, and `git diff --check` pass.
 
 Update these counts only after a complete verification run; focused test results do not replace the baseline.
