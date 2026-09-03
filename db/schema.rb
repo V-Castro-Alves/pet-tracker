@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_01_210000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
@@ -98,6 +98,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_200000) do
     t.index ["pet_id"], name: "index_medical_entries_on_pet_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.string "deduplication_key", null: false
+    t.datetime "delivered_at"
+    t.string "kind", null: false
+    t.string "path", default: "/", null: false
+    t.integer "pet_id"
+    t.datetime "read_at"
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["pet_id"], name: "index_notifications_on_pet_id"
+    t.index ["user_id", "deduplication_key"], name: "index_notifications_on_user_and_deduplication_key", unique: true
+    t.index ["user_id", "read_at", "created_at"], name: "index_notifications_on_user_id_and_read_at_and_created_at"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "pet_invites", force: :cascade do |t|
     t.datetime "accepted_at"
     t.integer "accepted_by_id"
@@ -139,6 +157,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_200000) do
     t.string "time_zone", default: "UTC", null: false
     t.datetime "updated_at", null: false
     t.index ["qr_token"], name: "index_pets_on_qr_token", unique: true
+  end
+
+  create_table "push_subscriptions", force: :cascade do |t|
+    t.string "auth", null: false
+    t.datetime "created_at", null: false
+    t.text "endpoint", null: false
+    t.string "p256dh", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.integer "user_id", null: false
+    t.index ["endpoint"], name: "index_push_subscriptions_on_endpoint", unique: true
+    t.index ["user_id"], name: "index_push_subscriptions_on_user_id"
   end
 
   create_table "sessions", force: :cascade do |t|
@@ -195,11 +225,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_200000) do
   add_foreign_key "meal_slots", "pets"
   add_foreign_key "medical_entries", "pets"
   add_foreign_key "medical_entries", "users", column: "created_by_id"
+  add_foreign_key "notifications", "pets"
+  add_foreign_key "notifications", "users"
   add_foreign_key "pet_invites", "pets"
   add_foreign_key "pet_invites", "users", column: "accepted_by_id"
   add_foreign_key "pet_invites", "users", column: "created_by_id"
   add_foreign_key "pet_users", "pets"
   add_foreign_key "pet_users", "users"
+  add_foreign_key "push_subscriptions", "users"
   add_foreign_key "sessions", "users"
   add_foreign_key "vaccines", "pets"
   add_foreign_key "weight_logs", "pets"

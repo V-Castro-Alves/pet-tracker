@@ -8,6 +8,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= tag.meta name: "theme-color", content: "#247a55" %>
 
     <%= yield :head %>
 
@@ -30,7 +31,13 @@
       <% end %>
 
       <% if authenticated? %>
-        <%= button_to "Sign out", session_path, method: :delete, class: "link-button" %>
+        <nav class="header-actions" aria-label="Account">
+          <%= link_to notifications_path, class: "notification-link" do %>
+            Notifications
+            <% if (unread_count = Current.user.notifications.unread.count).positive? %><span class="notification-count"><%= unread_count %></span><% end %>
+          <% end %>
+          <%= button_to "Sign out", session_path, method: :delete, class: "link-button" %>
+        </nav>
       <% end %>
     </header>
 

@@ -74,6 +74,14 @@ Make sure you have the following installed on your machine:
    bin/jobs
    ```
 
+   Solid Queue runs scheduled meal and vaccine checks in production. In-app alerts work without additional credentials. To enable browser push delivery, generate a VAPID key pair once:
+
+   ```bash
+   bin/rails runner 'key = WebPush.generate_key; puts "VAPID_PUBLIC_KEY=#{key.public_key}"; puts "VAPID_PRIVATE_KEY=#{key.private_key}"'
+   ```
+
+   Store those values as deployment secrets named `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY`. You may also set `VAPID_SUBJECT` to a monitored `mailto:` or HTTPS contact URI. Never commit the private key.
+
 4. **Access the application**:
    Open your browser and navigate to `http://localhost:3000`.
 

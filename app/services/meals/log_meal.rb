@@ -42,7 +42,21 @@ module Meals
         bag = pet.active_food_bag
         return unless bag
 
+        was_low = bag.low_stock?
         bag.update!(remaining_weight_g: bag.remaining_weight_g - meal_log.actual_amount_g)
+        publish_low_stock!(bag) if !was_low && bag.low_stock?
+      end
+
+      def publish_low_stock!(bag)
+        Notifications::Publish.new(
+          pet: pet,
+          kind: "food_low",
+          title: "#{pet.name}'s food is running low",
+          body: "About #{bag.remaining_weight_g.round} g remains in the current bag.",
+          path: Rails.application.routes.url_helpers.pet_food_bags_path(pet),
+          deduplication_key: "food_bag:#{bag.id}:low"
+        ).call
+        bag.update!(low_stock_notified_at: Time.current)
       end
   end
 end

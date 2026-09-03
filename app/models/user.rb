@@ -7,6 +7,8 @@ class User < ApplicationRecord
   has_many :created_pet_invites, class_name: "PetInvite", foreign_key: :created_by_id, dependent: :restrict_with_error, inverse_of: :created_by
   has_many :accepted_pet_invites, class_name: "PetInvite", foreign_key: :accepted_by_id, dependent: :nullify, inverse_of: :accepted_by
   has_many :medical_entries, foreign_key: :created_by_id, dependent: :restrict_with_error, inverse_of: :created_by
+  has_many :notifications, dependent: :destroy
+  has_many :push_subscriptions, dependent: :destroy
 
   normalizes :email_address, with: ->(email) { email.strip.downcase }
 

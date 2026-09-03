@@ -22,6 +22,10 @@ Rails.application.routes.draw do
   get "meal_log/:qr_token", to: "qr_meal_logs#show", as: :qr_meal_log
   get "invites/:token", to: "invitations#show", as: :invitation
   post "invites/:token", to: "invitations#create"
+  resources :notifications, only: %i[index update] do
+    patch :read_all, on: :collection
+  end
+  resources :push_subscriptions, only: %i[create destroy]
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

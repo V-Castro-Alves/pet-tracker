@@ -1,0 +1,18 @@
+unread_food:
+  user: one
+  pet: one
+  kind: food_low
+  title: Pepper's food is running low
+  body: About 400 g remains in the current bag.
+  path: /pets/<%= ActiveRecord::FixtureSet.identify(:one) %>/food_bags
+  deduplication_key: fixture-food-low
+
+read_vaccine:
+  user: one
+  pet: one
+  kind: vaccine_due
+  title: Rabies overdue
+  body: Pepper's Rabies vaccine is overdue.
+  path: /pets/<%= ActiveRecord::FixtureSet.identify(:one) %>/vaccines
+  deduplication_key: fixture-vaccine-overdue
+  read_at: <%= 1.hour.ago %>

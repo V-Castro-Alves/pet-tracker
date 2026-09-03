@@ -18,6 +18,9 @@ The README and specification files describe both implemented and planned feature
 - Preserve the application's time-zone behavior. Scheduled occurrences use the pet's time zone, while users also have their own configured time zone.
 - A pet must always retain at least one caretaker and one administrator. When an administrator unlinks themselves and other caretakers remain, promote the longest-linked remaining caretaker; keep membership removal transactional.
 - Pet invitations are single-use, expire after seven days, and may optionally be restricted to a normalized email address. Preserve the protected-destination return flow through both sign-in and registration.
+- Notifications must remain idempotent through a stable per-user `deduplication_key`. Scheduled jobs may run repeatedly; never rely on timing alone to prevent duplicate alerts.
+- In-app notifications work without push configuration. Browser delivery additionally requires `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY`; never commit private VAPID material. Expired browser subscriptions should be removed during delivery.
+- Meal reminders and unresolved-meal detection use each pet's time zone. Keep recurring jobs time-zone-aware and pass explicit times/dates in tests.
 - Use strong parameters through Rails `params.expect` conventions already present in the controllers.
 - Prefer the existing Hotwire/server-rendered approach over introducing a separate frontend framework.
 - Do not edit unrelated user changes or generated dependency files unless the task requires it.

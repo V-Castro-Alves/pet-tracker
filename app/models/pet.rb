@@ -11,6 +11,7 @@ class Pet < ApplicationRecord
   has_many :weight_logs, dependent: :destroy
   has_many :vaccines, dependent: :destroy
   has_many :medical_entries, dependent: :destroy
+  has_many :notifications, dependent: :destroy
 
   def active_food_bag
     food_bags.active.first

@@ -24,4 +24,14 @@ class Meals::LogMealTest < ActiveSupport::TestCase
       Meals::LogMeal.new(pet: pets(:one), meal_slot: meal_slots(:dinner), user: users(:one), attributes: attributes).call
     end
   end
+
+  test "crossing the low-stock threshold publishes one alert" do
+    food_bags(:active).update!(remaining_weight_g: 500)
+    attributes = { scheduled_for: 4.days.from_now, status: "fed", actual_amount_g: 100, actual_time: Time.current }
+
+    assert_difference -> { Notification.where(kind: "food_low", pet: pets(:one)).count }, 1 do
+      Meals::LogMeal.new(pet: pets(:one), meal_slot: meal_slots(:dinner), user: users(:one), attributes: attributes).call
+    end
+    assert food_bags(:active).reload.low_stock_notified_at?
+  end
 end

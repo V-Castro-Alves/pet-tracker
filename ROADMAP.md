@@ -20,17 +20,17 @@ This file is the durable source of implementation milestone status. Product beha
   - Expiring single-use invites, acceptance through authentication, administrator removal, and safe self-unlinking.
 - [x] Weight, vaccine, and medical records
   - CRUD screens, dashboard summaries, due-state helpers, and weight trend presentation.
-- [ ] Background jobs and notifications
+- [x] Background jobs and notifications
   - Idempotent meal, food, and vaccine events followed by push subscription and delivery support.
 - [ ] PWA and production completion
   - Offline behavior, device testing, deployment configuration, backup/restore validation, accessibility, and final documentation.
 
 ## Current verification baseline
 
-After the health-record milestone:
+After the notifications milestone:
 
-- Model/controller/service suite: 92 tests, 237 assertions, all passing.
-- Headless-Chrome system suite: 6 tests, 34 assertions, all passing.
+- Model/controller/service suite: 106 tests, 287 assertions, all passing.
+- Headless-Chrome system suite: 7 tests, 38 assertions, all passing.
 - RuboCop, Brakeman, Bundler Audit, Importmap Audit, and `git diff --check` pass.
 
 Update these counts only after a complete verification run; focused test results do not replace the baseline.

@@ -45,6 +45,9 @@ a { color: var(--primary-dark); }
 }
 
 .brand { display: flex; gap: 0.5rem; color: var(--ink); font-weight: 800; text-decoration: none; }
+.header-actions { display: flex; align-items: center; gap: 1rem; }
+.notification-link { display: inline-flex; align-items: center; gap: 0.35rem; }
+.notification-count { min-width: 1.35rem; padding: 0.12rem 0.35rem; color: white; border-radius: 2rem; background: var(--danger); font-size: 0.75rem; font-weight: 800; text-align: center; }
 .container { width: min(100% - 2rem, 70rem); margin-inline: auto; padding-block: 2rem 4rem; }
 .auth-card { width: min(100%, 30rem); margin: 2rem auto; padding: 2rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--surface); box-shadow: 0 1rem 2.5rem rgb(31 54 43 / 8%); }
 h1, h2, p { margin-top: 0; }
@@ -145,6 +148,15 @@ textarea { resize: vertical; }
 .timeline-entry::before { position: absolute; top: 1.4rem; left: -2.08rem; width: 0.8rem; height: 0.8rem; content: ""; border: 3px solid var(--canvas); border-radius: 50%; background: var(--primary); }
 .timeline-entry time, .record-byline { color: var(--muted); font-size: 0.9rem; }
 .timeline-entry h2 { margin: 0.35rem 0 0.75rem; }
+.push-settings { display: flex; align-items: center; gap: 1rem; }
+.push-settings > :first-child { flex: 1; }
+.push-settings h2, .push-settings p { margin-bottom: 0.25rem; }
+.notification-list { display: grid; gap: 0.75rem; }
+.notification-row { display: flex; align-items: center; gap: 1rem; padding: 1.25rem; border: 1px solid var(--border); border-radius: 0.8rem; background: var(--surface); }
+.notification-row > :first-child { flex: 1; }
+.notification-row h2 { margin-bottom: 0.35rem; font-size: 1.15rem; }
+.notification-row p, .notification-row time { margin-bottom: 0.25rem; color: var(--muted); }
+.notification-unread { border-left: 5px solid var(--primary); }
 
 @media print {
   body { background: white; }
@@ -170,4 +182,5 @@ textarea { resize: vertical; }
   .history-row > :last-child { grid-column: 2; }
   .health-grid { grid-template-columns: 1fr; }
   .record-row { flex-direction: column; }
+  .push-settings, .notification-row { align-items: stretch; flex-direction: column; }
 }

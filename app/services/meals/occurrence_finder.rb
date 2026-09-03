@@ -15,12 +15,16 @@ module Meals
     end
 
     def oldest_unresolved(lookback: 7.days)
+      unresolved(lookback: lookback).first
+    end
+
+    def unresolved(lookback: 7.days)
       days = (lookback / 1.day).to_i
       dates = ((local_date - days)..local_date).to_a
       occurrences_for(*dates)
         .select { |occurrence| occurrence.scheduled_for + GRACE_PERIOD < now }
         .reject { |occurrence| resolved?(occurrence) }
-        .min_by(&:scheduled_for)
+        .sort_by(&:scheduled_for)
     end
 
     def for(slot:, date: local_date)

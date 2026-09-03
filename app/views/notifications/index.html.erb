@@ -1,0 +1,21 @@
+<% content_for :title, "Notifications" %>
+<section class="page-header">
+  <div><p class="eyebrow">Updates</p><h1>Notifications</h1></div>
+  <% if @notifications.any? { |notification| !notification.read? } %><%= button_to "Mark all as read", read_all_notifications_path, method: :patch, class: "button button-secondary" %><% end %>
+</section>
+
+<section class="dashboard-section push-settings" data-controller="push-notifications" data-push-notifications-public-key-value="<%= ENV["VAPID_PUBLIC_KEY"] %>" data-push-notifications-create-url-value="<%= push_subscriptions_path %>" data-push-notifications-destroy-url-value="<%= push_subscription_path("current") %>">
+  <div><h2>Device notifications</h2><p class="muted" data-push-notifications-target="status">Checking this device…</p></div>
+  <button type="button" class="button button-primary button-fit" data-push-notifications-target="enable" data-action="push-notifications#enable">Enable push</button>
+  <button type="button" class="button button-secondary" data-push-notifications-target="disable" data-action="push-notifications#disable" hidden>Disable push</button>
+</section>
+
+<div class="notification-list page-action">
+  <% @notifications.each do |notification| %>
+    <article class="notification-row <%= "notification-unread" unless notification.read? %>">
+      <div><p class="eyebrow"><%= notification.kind.humanize %></p><h2><%= notification.title %></h2><p><%= notification.body %></p><time datetime="<%= notification.created_at.iso8601 %>"><%= time_ago_in_words(notification.created_at) %> ago</time></div>
+      <%= button_to notification.read? ? "Open" : "Read and open", notification_path(notification), method: :patch, class: "button button-secondary" %>
+    </article>
+  <% end %>
+  <% if @notifications.empty? %><section class="empty-state"><div class="empty-state-icon" aria-hidden="true">🔔</div><h2>You're all caught up</h2><p>Meal, food, and vaccine alerts will appear here.</p></section><% end %>
+</div>

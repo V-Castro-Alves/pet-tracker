@@ -1,0 +1,6 @@
+one:
+  user: one
+  endpoint: https://push.example.test/subscription/one
+  p256dh: test-p256dh
+  auth: test-auth
+  user_agent: Test Browser
