@@ -7,8 +7,10 @@ class QrCodesControllerTest < ActionDispatch::IntegrationTest
     get pet_qr_code_url(pets(:one))
 
     assert_response :success
-    assert_select ".qr-image svg"
-    assert_includes response.body, qr_meal_log_url(qr_token: pets(:one).qr_token)
+    assert_select ".qr-image svg[viewBox]"
+    assert_select ".qr-image svg path[transform^='translate'][transform*='scale(12)']"
+    assert_select ".qr-url", count: 0
+    assert_not_includes response.body, qr_meal_log_url(qr_token: pets(:one).qr_token)
   end
 
   test "downloads an SVG" do

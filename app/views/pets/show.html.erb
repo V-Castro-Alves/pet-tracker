@@ -5,13 +5,15 @@
   <% else %>
     <div class="pet-photo pet-photo-placeholder" aria-hidden="true">🐾</div>
   <% end %>
-  <div>
+  <div class="pet-hero-copy">
     <p class="eyebrow"><%= @pet.species %><%= " · #{@pet.breed}" if @pet.breed.present? %></p>
     <h1><%= @pet.name %></h1>
-    <p class="muted"><%= @pet.time_zone %></p>
-    <%= link_to "Edit profile", edit_pet_path(@pet), class: "button button-secondary" %>
-    <%= link_to "Meal QR code", pet_qr_code_path(@pet), class: "button button-secondary" %>
-    <%= link_to "Caretakers", pet_pet_users_path(@pet), class: "button button-secondary" %>
+    <p class="muted">Care schedule · <%= @pet.time_zone %></p>
+    <div class="hero-actions">
+      <%= link_to "Edit profile", edit_pet_path(@pet), class: "button button-secondary" %>
+      <%= link_to "Meal QR code", pet_qr_code_path(@pet), class: "button button-secondary" %>
+      <%= link_to "Caretakers", pet_pet_users_path(@pet), class: "button button-secondary" %>
+    </div>
   </div>
 </section>
 
@@ -44,7 +46,7 @@
   <% end %>
 </section>
 
-<section class="dashboard-section">
+<section class="dashboard-section page-action schedule-panel">
   <div class="section-heading">
     <div>
       <p class="eyebrow">Daily routine</p>

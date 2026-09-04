@@ -7,14 +7,12 @@
   <div class="qr-print-header">
     <p class="eyebrow">Pet Tracker</p>
     <h1>Log <%= @pet.name %>'s meal</h1>
-    <p>Scan with your phone, sign in, and confirm the meal.</p>
+    <p>Point your phone's camera at the code to log a meal.</p>
   </div>
 
   <div class="qr-image" aria-label="QR code for <%= @pet.name %>'s meal log">
-    <%= sanitize @qr_svg, tags: %w[svg path rect], attributes: %w[xmlns width height viewBox fill d shape-rendering] %>
+    <%= sanitize @qr_svg, tags: %w[svg path rect], attributes: %w[xmlns width height viewBox fill d shape-rendering transform] %>
   </div>
-  <p class="qr-url"><%= @meal_log_url %></p>
-
   <div class="qr-actions no-print">
     <%= link_to "Download SVG", download_pet_qr_code_path(@pet), class: "button button-secondary" %>
     <button type="button" class="button button-primary button-fit" onclick="window.print()">Print QR code</button>

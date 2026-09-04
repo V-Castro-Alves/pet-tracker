@@ -3,6 +3,7 @@
   <div>
     <p class="eyebrow"><%= link_to @pet.name, @pet %></p>
     <h1>Meal schedule</h1>
+    <p class="page-intro">A clear daily rhythm for <%= @pet.name %>, shown in <%= @pet.time_zone %>.</p>
   </div>
   <%= link_to "Add meal", new_pet_meal_slot_path(@pet), class: "button button-primary button-fit" %>
 </section>
@@ -11,7 +12,7 @@
   <div class="schedule-list">
     <% @meal_slots.each do |meal_slot| %>
       <article class="schedule-row">
-        <div class="schedule-time"><%= meal_slot.scheduled_time.strftime("%H:%M") %></div>
+        <div class="schedule-time"><small>Time</small><%= meal_slot.scheduled_time.strftime("%H:%M") %></div>
         <div class="schedule-details">
           <h2><%= meal_slot.name %></h2>
           <p><%= number_with_precision(meal_slot.default_amount_g, precision: 0, strip_insignificant_zeros: true) %> g default serving</p>

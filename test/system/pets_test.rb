@@ -8,11 +8,12 @@ class PetsTest < ApplicationSystemTestCase
     set_control "#pet_name", "Milo"
     set_control "#pet_species", "Cat"
     set_control "#pet_breed", "Tabby"
-    select "(GMT+00:00) UTC", from: "pet_time_zone"
-
+    attach_file "Pet photo", Rails.root.join("public/icon.png")
     assert_field "pet_name", with: "Milo"
     assert_field "pet_species", with: "Cat"
     assert_field "pet_breed", with: "Tabby"
+    assert_no_field "Time zone"
+    assert_selector ".photo-preview img", visible: true
 
     submit_form "Create Pet"
     assert_text "Milo was added. Now set up a feeding schedule."

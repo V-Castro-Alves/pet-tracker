@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_01_210000) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_04_000000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
@@ -151,11 +151,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_01_210000) do
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.text "notes"
+    t.string "public_id", null: false
     t.string "qr_token", null: false
     t.string "sex"
     t.string "species", null: false
     t.string "time_zone", default: "UTC", null: false
     t.datetime "updated_at", null: false
+    t.index ["public_id"], name: "index_pets_on_public_id", unique: true
     t.index ["qr_token"], name: "index_pets_on_qr_token", unique: true
   end
 

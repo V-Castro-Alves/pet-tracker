@@ -1,5 +1,6 @@
 class Pet < ApplicationRecord
   has_secure_token :qr_token, length: 24
+  before_validation :assign_public_id, on: :create
 
   has_one_attached :photo
   has_many :pet_users, dependent: :destroy
@@ -28,7 +29,8 @@ class Pet < ApplicationRecord
     logs.values.sum { |daily_logs| daily_logs.sum(&:actual_amount_g) } / logs.size
   end
 
-  validates :name, :species, presence: true
+  validates :name, :species, :public_id, presence: true
+  validates :public_id, uniqueness: true
   validates :sex, inclusion: { in: %w[female male unknown] }, allow_blank: true
   validates :time_zone,
     presence: true,
@@ -36,7 +38,15 @@ class Pet < ApplicationRecord
   validate :birthdate_cannot_be_in_the_future
   validate :acceptable_photo
 
+  def to_param
+    public_id
+  end
+
   private
+    def assign_public_id
+      self.public_id ||= SecureRandom.uuid
+    end
+
     def birthdate_cannot_be_in_the_future
       errors.add(:birthdate, "cannot be in the future") if birthdate.present? && birthdate > Date.current
     end

@@ -14,7 +14,7 @@ class PetsController < ApplicationController
   end
 
   def create
-    @pet = Pet.new(pet_params)
+    @pet = Pet.new(pet_params.merge(time_zone: Current.user.time_zone))
 
     Pet.transaction do
       @pet.save!
@@ -49,7 +49,7 @@ class PetsController < ApplicationController
 
   private
     def set_pet
-      @pet = Current.user.pets.find(params[:id])
+      @pet = current_user_pet!
     end
 
     def require_pet_admin
@@ -59,6 +59,6 @@ class PetsController < ApplicationController
     end
 
     def pet_params
-      params.expect(pet: %i[name species breed birthdate sex notes time_zone photo])
+      params.expect(pet: %i[name species breed birthdate sex notes photo])
     end
 end

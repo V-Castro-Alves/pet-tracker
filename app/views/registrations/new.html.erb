@@ -5,7 +5,7 @@
   <h1>Create your account</h1>
   <p class="muted">Track meals, supplies, and health records with everyone who cares for your pet.</p>
 
-  <%= form_with model: @user, url: registration_path do |form| %>
+  <%= form_with model: @user, url: registration_path, data: { controller: "time-zone" } do |form| %>
     <%= render "shared/form_errors", record: @user %>
 
     <div class="field">
@@ -18,10 +18,7 @@
       <%= form.email_field :email_address, required: true, autocomplete: "email" %>
     </div>
 
-    <div class="field">
-      <%= form.label :time_zone %>
-      <%= form.time_zone_select :time_zone, nil, {}, required: true %>
-    </div>
+    <%= form.hidden_field :browser_time_zone, value: "", data: { time_zone_target: "input" } %>
 
     <div class="field">
       <%= form.label :password %>

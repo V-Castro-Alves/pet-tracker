@@ -15,6 +15,7 @@ The README and specification files describe both implemented and planned feature
 - Use project binstubs (`bin/rails`, `bin/rubocop`, and the other scripts in `bin/`) instead of global commands.
 - Keep controllers focused on HTTP concerns. Put non-trivial meal-domain behavior under `app/services/meals` and persistence rules in models.
 - Scope pet-owned records through `Current.user.pets`; do not bypass authorization with unscoped finds in application code.
+- Pet URLs use the opaque `public_id`; keep integer primary keys for associations and resolve pet routes through `current_user_pet!` so authorization and legacy numeric URLs remain supported.
 - Preserve the application's time-zone behavior. Scheduled occurrences use the pet's time zone, while users also have their own configured time zone.
 - A pet must always retain at least one caretaker and one administrator. When an administrator unlinks themselves and other caretakers remain, promote the longest-linked remaining caretaker; keep membership removal transactional.
 - Pet invitations are single-use, expire after seven days, and may optionally be restricted to a normalized email address. Preserve the protected-destination return flow through both sign-in and registration.

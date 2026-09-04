@@ -1,12 +1,14 @@
-<section class="page-header">
+<section class="page-header dashboard-hero">
   <div>
-    <p class="eyebrow">Care dashboard</p>
-    <h1>Your pets</h1>
+    <p class="eyebrow">Your care space</p>
+    <h1>Good care starts here.</h1>
+    <p class="page-intro">Meals, health, and the little details that keep your companions thriving.</p>
   </div>
-  <%= link_to "Add pet", new_pet_path, class: "button button-primary button-fit" %>
+  <%= link_to new_pet_path, class: "button button-primary button-fit" do %><span aria-hidden="true">＋</span> Add pet<% end %>
 </section>
 
 <% if pets.any? %>
+  <div class="section-title"><h2>Your pets</h2><span><%= pluralize(pets.size, "companion") %></span></div>
   <div class="pet-grid">
     <% pets.each do |pet| %>
       <%= link_to pet, class: "pet-card" do %>
@@ -18,6 +20,7 @@
         <div class="pet-card-body">
           <h2><%= pet.name %></h2>
           <p><%= pet.species %><%= " · #{pet.breed}" if pet.breed.present? %></p>
+          <span class="card-link">Open profile <span aria-hidden="true">→</span></span>
         </div>
       <% end %>
     <% end %>

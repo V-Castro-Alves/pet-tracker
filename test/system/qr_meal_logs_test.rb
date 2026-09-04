@@ -1,6 +1,14 @@
 require "application_system_test_case"
 
 class QrMealLogsTest < ApplicationSystemTestCase
+  test "meal QR code is large enough to scan" do
+    sign_in_as users(:one)
+    visit pet_qr_code_path(pets(:one))
+
+    rendered_width = page.evaluate_script("document.querySelector('.qr-image svg').getBoundingClientRect().width")
+    assert_operator rendered_width, :>=, 400
+  end
+
   test "guest signs in from a QR code and reaches the pet's meal form" do
     pet = pets(:one)
     user = users(:one)

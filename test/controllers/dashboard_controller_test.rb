@@ -10,6 +10,7 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     sign_in_as users(:one)
     get root_url
     assert_response :success
-    assert_select "h1", "Your pets"
+    assert_select "h1", "Good care starts here."
+    assert_select "h2", "Your pets"
   end
 end

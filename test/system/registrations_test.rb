@@ -6,9 +6,9 @@ class RegistrationsTest < ApplicationSystemTestCase
 
     set_control "#user_name", "Taylor"
     set_control "#user_email_address", "taylor@example.com"
-    select "(GMT+00:00) UTC", from: "Time zone"
     set_control "#user_password", "secret-password"
     set_control "#user_password_confirmation", "secret-password"
+    assert_no_field "Time zone"
 
     submit_form "Create account"
     assert_text "Welcome to Pet Tracker!"

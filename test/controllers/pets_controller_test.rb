@@ -18,6 +18,16 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
     pet = Pet.order(:created_at).last
     assert_redirected_to pet_meal_slots_url(pet)
     assert pet.pet_users.exists?(user: users(:one), is_pet_admin: true)
+    assert_equal users(:one).time_zone, pet.time_zone
+    assert_match(/\A[0-9a-f-]{36}\z/, pet.public_id)
+  end
+
+  test "uses an opaque public identifier in pet URLs" do
+    assert_equal pets(:one).public_id, pets(:one).to_param
+
+    get pet_url(pets(:one))
+    assert_response :success
+    assert_includes request.path, pets(:one).public_id
   end
 
   test "does not expose another user's pet" do

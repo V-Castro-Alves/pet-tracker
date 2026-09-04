@@ -1,4 +1,4 @@
-<%= form_with model: pet do |form| %>
+<%= form_with model: pet, data: { controller: "photo-preview" } do |form| %>
   <%= render "shared/form_errors", record: pet %>
 
   <div class="form-grid">
@@ -22,15 +22,22 @@
       <%= form.label :sex %>
       <%= form.select :sex, [["Female", "female"], ["Male", "male"], ["Unknown", "unknown"]], include_blank: "Not specified" %>
     </div>
-    <div class="field">
-      <%= form.label :time_zone %>
-      <%= form.time_zone_select :time_zone, nil, {}, required: true %>
-    </div>
   </div>
 
-  <div class="field">
-    <%= form.label :photo %>
-    <%= form.file_field :photo, accept: "image/png,image/jpeg,image/webp" %>
+  <div class="photo-picker">
+    <div class="photo-preview">
+      <% if pet.photo.attached? && pet.persisted? %>
+        <%= image_tag pet.photo.variant(resize_to_fill: [240, 240]), alt: "Current photo of #{pet.name}", data: { photo_preview_target: "image" } %>
+      <% else %>
+        <img alt="Selected pet photo preview" hidden data-photo-preview-target="image">
+        <span data-photo-preview-target="placeholder" aria-hidden="true">📷</span>
+      <% end %>
+    </div>
+    <div class="field photo-field">
+      <%= form.label :photo, "Pet photo" %>
+      <p class="field-hint">JPEG, PNG, or WebP, up to 5 MB.</p>
+      <%= form.file_field :photo, accept: "image/png,image/jpeg,image/webp", data: { photo_preview_target: "input", action: "change->photo-preview#show" } %>
+    </div>
   </div>
   <div class="field">
     <%= form.label :notes %>

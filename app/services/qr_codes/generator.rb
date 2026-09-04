@@ -8,7 +8,8 @@ module QrCodes
       RQRCode::QRCode.new(url).as_svg(
         color: "1d2a25",
         fill: "ffffff",
-        module_size: 8,
+        module_size: 12,
+        offset: 4,
         shape_rendering: "crispEdges",
         use_path: true,
         viewbox: true

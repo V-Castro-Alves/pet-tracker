@@ -27,10 +27,10 @@ This file is the durable source of implementation milestone status. Product beha
 
 ## Current verification baseline
 
-After the notifications milestone:
+After the browser-detected time-zone, public pet ID, and UI polish changes:
 
-- Model/controller/service suite: 106 tests, 287 assertions, all passing.
-- Headless-Chrome system suite: 7 tests, 38 assertions, all passing.
+- Model/controller/service suite: 108 tests, 301 assertions, all passing.
+- Headless-Chrome system suite: 8 tests, 42 assertions, all passing.
 - RuboCop, Brakeman, Bundler Audit, Importmap Audit, and `git diff --check` pass.
 
 Update these counts only after a complete verification run; focused test results do not replace the baseline.
