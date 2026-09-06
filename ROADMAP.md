@@ -22,15 +22,17 @@ This file is the durable source of implementation milestone status. Product beha
   - CRUD screens, dashboard summaries, due-state helpers, and weight trend presentation.
 - [x] Background jobs and notifications
   - Idempotent meal, food, and vaccine events followed by push subscription and delivery support.
+- [x] Personal meal reminders
+  - Per-user, per-meal grace windows and opt-out; minute-by-minute scheduling in development and production.
 - [ ] PWA and production completion
   - Offline behavior, device testing, deployment configuration, backup/restore validation, accessibility, and final documentation.
 
 ## Current verification baseline
 
-After the browser-detected time-zone, public pet ID, and UI polish changes:
+After the personal meal reminders and development scheduling changes:
 
-- Model/controller/service suite: 108 tests, 301 assertions, all passing.
-- Headless-Chrome system suite: 8 tests, 42 assertions, all passing.
+- Model/controller/service suite: 116 tests, 335 assertions, all passing.
+- Headless-Chrome system suite: 9 tests, 49 assertions, all passing.
 - RuboCop, Brakeman, Bundler Audit, Importmap Audit, and `git diff --check` pass.
 
 Update these counts only after a complete verification run; focused test results do not replace the baseline.

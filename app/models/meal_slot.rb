@@ -1,5 +1,6 @@
 class MealSlot < ApplicationRecord
   belongs_to :pet
+  has_many :meal_reminder_preferences, dependent: :destroy
   has_many :meal_logs, dependent: :destroy
 
   scope :active, -> { where(active: true) }

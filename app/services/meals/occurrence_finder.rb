@@ -31,6 +31,10 @@ module Meals
       Occurrence.new(meal_slot: slot, scheduled_for: scheduled_time(slot, date))
     end
 
+    def occurs_on?(slot, date)
+      slot.created_at.nil? || date >= slot.created_at.in_time_zone(pet.time_zone).to_date
+    end
+
     private
       attr_reader :pet, :now
 
@@ -40,7 +44,7 @@ module Meals
 
       def occurrences_for(*dates)
         pet.meal_slots.active.chronological.flat_map do |slot|
-          dates.map { |date| self.for(slot: slot, date: date) }
+          dates.filter_map { |date| self.for(slot: slot, date: date) if occurs_on?(slot, date) }
         end
       end
 

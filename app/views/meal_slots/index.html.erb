@@ -15,6 +15,8 @@
         <div class="schedule-time"><small>Time</small><%= meal_slot.scheduled_time.strftime("%H:%M") %></div>
         <div class="schedule-details">
           <h2><%= meal_slot.name %></h2>
+          <% reminder = meal_slot.meal_reminder_preferences.find { |preference| preference.user_id == Current.user.id } %>
+          <p>My reminder: <%= reminder && !reminder.enabled? ? "Off" : "#{reminder&.delay_minutes || 60} minutes after meal time" %></p>
           <p><%= number_with_precision(meal_slot.default_amount_g, precision: 0, strip_insignificant_zeros: true) %> g default serving</p>
         </div>
         <div class="schedule-actions">

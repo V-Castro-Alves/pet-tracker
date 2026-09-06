@@ -16,5 +16,22 @@
     </div>
   </div>
 
+  <%= fields_for :reminder_preference, @reminder_preference do |reminder| %>
+    <%= render "shared/form_errors", record: @reminder_preference %>
+    <fieldset>
+      <legend>My reminder for this meal</legend>
+      <p>Only your reminders change. Each caretaker chooses their own delay. Reminders stop once the meal is logged as fed or skipped.</p>
+      <div class="field">
+        <%= reminder.label :enabled, "Remind me if this meal has not been logged" %>
+        <%= reminder.select :enabled, [ [ "Reminders on", true ], [ "No reminders for this meal", false ] ] %>
+      </div>
+      <div class="field">
+        <%= reminder.label :delay_minutes, "Grace window (minutes after meal time)" %>
+        <%= reminder.number_field :delay_minutes, min: 0, max: 1440, step: 1, required: true %>
+        <p class="muted">0 means at meal time. Default: 60 minutes. Checks run every minute.</p>
+      </div>
+    </fieldset>
+  <% end %>
+
   <%= form.submit class: "button button-primary button-fit" %>
 <% end %>

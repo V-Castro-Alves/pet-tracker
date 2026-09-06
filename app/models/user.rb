@@ -1,5 +1,6 @@
 class User < ApplicationRecord
   has_secure_password
+  has_many :meal_reminder_preferences, dependent: :destroy
   has_many :sessions, dependent: :destroy
   has_many :pet_users, dependent: :destroy
   has_many :pets, through: :pet_users

@@ -14,7 +14,7 @@ The signature feature of Pet Tracker is a **printable QR code** that lives next 
   - Pre-configure multiple meal slots per pet (e.g., breakfast, lunch, dinner) with "weigh-once" default amounts.
   - Quick confirmation that uses the default weights to avoid typing/weighing every time.
   - **Duplicate Protection**: Warns caretakers if a meal has already been logged.
-- 🔔 **Missed Meal Alerts**: Checks for missed feedings past a 60-minute grace window and triggers notifications.
+- 🔔 **Missed Meal Alerts**: Each caretaker chooses a grace window per meal (0–1440 minutes, default 60) or disables reminders in the meal form. Fed or skipped meals suppress reminders.
 - 🔄 **Catch-Up Flow**: Prompts users to resolve older, unlogged meal slots (e.g., "Fed (forgot to log)" or "Skipped") to keep history clean.
 - 📦 **Food Inventory Tracking**:
   - Record new food bags with their starting weights.
@@ -74,13 +74,17 @@ Make sure you have the following installed on your machine:
    bin/jobs
    ```
 
-   Solid Queue runs scheduled meal and vaccine checks in production. In-app alerts work without additional credentials. To enable browser push delivery, generate a VAPID key pair once:
+   Run `bin/rails db:prepare` after updating, then restart the web server and `bin/jobs`. Development uses its own queue database. Keep `bin/jobs` running alongside `bin/dev`; starting the web server alone does not start scheduled checks. Production can use `bin/jobs` or `SOLID_QUEUE_IN_PUMA=1`.
+
+   Solid Queue checks meals every minute in development and production. A reminder becomes eligible at the selected delay and arrives on the next worker check; delayed workers catch up for up to 24 hours after that deadline. Each caretaker receives at most one reminder per occurrence. The shared QR catch-up flow retains its separate 60-minute threshold. In-app alerts work without additional credentials. To enable browser push delivery, generate a VAPID key pair once:
 
    ```bash
    bin/rails runner 'key = WebPush.generate_key; puts "VAPID_PUBLIC_KEY=#{key.public_key}"; puts "VAPID_PRIVATE_KEY=#{key.private_key}"'
    ```
 
    Store those values as deployment secrets named `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY`. You may also set `VAPID_SUBJECT` to a monitored `mailto:` or HTTPS contact URI. Never commit the private key.
+
+   On each device, open **Notifications → Enable push** and allow browser notifications. Push requires HTTPS (or localhost), configured VAPID keys, and a running worker. In-app alerts appear on the Notifications page even without push.
 
 4. **Access the application**:
    Open your browser and navigate to `http://localhost:3000`.
