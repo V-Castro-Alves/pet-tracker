@@ -68,23 +68,26 @@ Make sure you have the following installed on your machine:
    ```
    This script will install standard Gems, run migrations, prepare the database, and launch the development server.
 
-3. **Start the background workers**:
-   To run background jobs (such as meal grace-period checkers, vaccine due alerts, and low-stock alerts) locally, start **Solid Queue**:
+3. **Start the application and background jobs**:
+   Prepare the databases after updating, then start the development server:
    ```bash
-   bin/jobs
+   bin/rails db:prepare
+   bin/rails server
    ```
 
-   Run `bin/rails db:prepare` after updating, then restart the web server and `bin/jobs`. Development uses its own queue database. Keep `bin/jobs` running alongside `bin/dev`; starting the web server alone does not start scheduled checks. Production can use `bin/jobs` or `SOLID_QUEUE_IN_PUMA=1`.
+   In development, the server automatically starts and stops the Solid Queue worker and recurring scheduler. `bin/dev` does the same; no second terminal is needed. Development uses its own queue database. To run workers separately, start the server with `SOLID_QUEUE_IN_PUMA=0 bin/rails server` and run `bin/jobs` in another terminal. Production requires `bin/jobs` or `SOLID_QUEUE_IN_PUMA=1`.
 
-   Solid Queue checks meals every minute in development and production. A reminder becomes eligible at the selected delay and arrives on the next worker check; delayed workers catch up for up to 24 hours after that deadline. Each caretaker receives at most one reminder per occurrence. The shared QR catch-up flow retains its separate 60-minute threshold. In-app alerts work without additional credentials. To enable browser push delivery, generate a VAPID key pair once:
+   Solid Queue checks meals every minute in development and production. A reminder becomes eligible at the selected delay and arrives on the next worker check; delayed workers catch up for up to 24 hours after that deadline. Each caretaker receives at most one reminder per occurrence. The shared QR catch-up flow retains its separate 60-minute threshold. In-app alerts work without additional credentials. Development automatically creates a persistent VAPID key pair in the git-ignored `storage/development_vapid.json` (owner access only). Restart the server after updating, then enable push on each device. Keep this file across restarts; replacing it requires subscribing devices again. Explicit VAPID environment variables take precedence.
+
+   For production, generate a VAPID key pair once:
 
    ```bash
    bin/rails runner 'key = WebPush.generate_key; puts "VAPID_PUBLIC_KEY=#{key.public_key}"; puts "VAPID_PRIVATE_KEY=#{key.private_key}"'
    ```
 
-   Store those values as deployment secrets named `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY`. You may also set `VAPID_SUBJECT` to a monitored `mailto:` or HTTPS contact URI. Never commit the private key.
+   Store those values as deployment secrets named `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY`. Set `VAPID_SUBJECT` to a real `mailto:` or HTTPS contact URI for your deployment; the default is `https://vitor.tail32ad45.ts.net`. Apple can reject local placeholder addresses with `BadJwtToken`. Never commit the private key.
 
-   On each device, open **Notifications → Enable push** and allow browser notifications. Push requires HTTPS (or localhost), configured VAPID keys, and a running worker. In-app alerts appear on the Notifications page even without push.
+   On each device, open **Notifications → Enable push** and allow browser notifications. Push requires HTTPS (or localhost), configured VAPID keys, and a running worker. In-app alerts appear on the Notifications page even without push. The list and unread badge update live through Turbo Streams and Action Cable. Development uses a separate Solid Cable database so updates from the background worker reach open browser pages; run `bin/rails db:prepare` and restart the server after updating.
 
 4. **Access the application**:
    Open your browser and navigate to `http://localhost:3000`.

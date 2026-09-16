@@ -7,13 +7,18 @@ class DeliverNotificationJob < ApplicationJob
     return unless vapid_configured?
 
     delivered = false
+    first_error = nil
     notification.user.push_subscriptions.find_each do |subscription|
       deliver(subscription, notification)
       delivered = true
-    rescue WebPush::ExpiredSubscription
+    rescue WebPush::ExpiredSubscription, WebPush::InvalidSubscription
       subscription.destroy!
+    rescue WebPush::ResponseError => error
+      first_error ||= error
+      Rails.logger.warn("Push delivery failed for subscription #{subscription.id}: #{error.class}")
     end
     notification.update!(delivered_at: Time.current) if delivered
+    raise first_error if first_error
   end
 
   private
@@ -32,7 +37,7 @@ class DeliverNotificationJob < ApplicationJob
           }
         ),
         vapid: {
-          subject: ENV.fetch("VAPID_SUBJECT", "mailto:notifications@pet-tracker.local"),
+          subject: ENV.fetch("VAPID_SUBJECT", "https://vitor.tail32ad45.ts.net"),
           public_key: ENV.fetch("VAPID_PUBLIC_KEY"),
           private_key: ENV.fetch("VAPID_PRIVATE_KEY")
         },

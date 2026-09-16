@@ -213,3 +213,5 @@ textarea { resize: vertical; }
   .record-row { flex-direction: column; }
   .push-settings, .notification-row { align-items: stretch; flex-direction: column; }
 }
+
+[hidden] { display: none !important; }

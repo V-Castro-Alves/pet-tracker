@@ -1,0 +1,5 @@
+<div id="notification-actions">
+  <% if user.notifications.unread.exists? %>
+    <%= button_to "Mark all as read", read_all_notifications_path, method: :patch, class: "button button-secondary" %>
+  <% end %>
+</div>

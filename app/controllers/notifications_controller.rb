@@ -11,6 +11,7 @@ class NotificationsController < ApplicationController
 
   def read_all
     Current.user.notifications.unread.update_all(read_at: Time.current, updated_at: Time.current)
+    Notification.broadcast_for(Current.user)
     redirect_to notifications_path, status: :see_other, notice: "Notifications marked as read."
   end
 end

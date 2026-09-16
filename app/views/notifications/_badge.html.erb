@@ -1,0 +1,5 @@
+<span id="notification-badge">
+  <% if (unread_count = user.notifications.unread.count).positive? %>
+    <span class="notification-count"><%= unread_count %></span>
+  <% end %>
+</span>

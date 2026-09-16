@@ -23,16 +23,20 @@ This file is the durable source of implementation milestone status. Product beha
 - [x] Background jobs and notifications
   - Idempotent meal, food, and vaccine events followed by push subscription and delivery support.
 - [x] Personal meal reminders
-  - Per-user, per-meal grace windows and opt-out; minute-by-minute scheduling in development and production.
+  - Per-user, per-meal grace windows and opt-out; minute-by-minute scheduling in development and production. Development Puma automatically starts the worker and scheduler.
+- [x] Device push setup reliability
+  - Persistent development keys, clear setup errors, and confirmed device registration. Browser setup tests use simulated push APIs; actual device delivery remains part of device testing.
+- [x] Live notifications and Apple push delivery
+  - User-scoped Turbo updates, cross-process development broadcasts, and a valid VAPID contact URI. Apple accepted a test push and receipt on the iPhone was confirmed.
 - [ ] PWA and production completion
   - Offline behavior, device testing, deployment configuration, backup/restore validation, accessibility, and final documentation.
 
 ## Current verification baseline
 
-After the personal meal reminders and development scheduling changes:
+After the live notifications and Apple push delivery changes:
 
-- Model/controller/service suite: 116 tests, 335 assertions, all passing.
-- Headless-Chrome system suite: 9 tests, 49 assertions, all passing.
+- Model/controller/service suite: 119 tests, 350 assertions, all passing.
+- Headless-Chrome system suite: 13 tests, 72 assertions, all passing.
 - RuboCop, Brakeman, Bundler Audit, Importmap Audit, and `git diff --check` pass.
 
 Update these counts only after a complete verification run; focused test results do not replace the baseline.

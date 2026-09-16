@@ -34,4 +34,34 @@ class DeliverNotificationJobTest < ActiveJob::TestCase
     ENV["VAPID_PUBLIC_KEY"] = original_public
     ENV["VAPID_PRIVATE_KEY"] = original_private
   end
+  test "one rejected device does not prevent another device receiving push" do
+    notification = notifications(:unread_food)
+    second = notification.user.push_subscriptions.create!(endpoint: "https://push.example.test/second", p256dh: "key", auth: "auth")
+    response = Struct.new(:body).new('{"reason":"BadJwtToken"}')
+    job = DeliverNotificationJob.new
+    job.define_singleton_method(:vapid_configured?) { true }
+    attempted = []
+    job.define_singleton_method(:deliver) do |subscription, _|
+      attempted << subscription.id
+      raise WebPush::Unauthorized.new(response, "web.push.apple.com") unless subscription == second
+    end
+
+    assert_raises(WebPush::Unauthorized) { job.perform(notification) }
+    assert_includes attempted, second.id
+    assert notification.reload.delivered_at?
+  end
+
+  test "expired subscriptions are removed and delivery continues" do
+    notification = notifications(:unread_food)
+    response = Struct.new(:body).new("expired")
+    job = DeliverNotificationJob.new
+    job.define_singleton_method(:vapid_configured?) { true }
+    job.define_singleton_method(:deliver) do |_, _notification|
+      raise WebPush::ExpiredSubscription.new(response, "push.example.test")
+    end
+    assert_difference "PushSubscription.count", -1 do
+      job.perform(notification)
+    end
+    assert_nil notification.reload.delivered_at
+  end
 end
