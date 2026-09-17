@@ -1,0 +1,43 @@
+x-app: &app
+  image: pet-tracker-development
+  build:
+    context: .
+    dockerfile: Dockerfile.dev
+    args:
+      UID: ${LOCAL_UID:-1000}
+      GID: ${LOCAL_GID:-1000}
+  init: true
+  volumes:
+    - .:/rails
+  tmpfs:
+    - /rails/tmp:mode=1777
+  environment:
+    RAILS_ENV: development
+    SOLID_QUEUE_IN_PUMA: "0"
+  stop_grace_period: 30s
+
+services:
+  db-prepare:
+    <<: *app
+    command: ["bin/rails", "db:prepare"]
+
+  web:
+    <<: *app
+    depends_on:
+      db-prepare:
+        condition: service_completed_successfully
+    ports:
+      - "3000:3000"
+    command:
+      - bash
+      - -ec
+      - |
+        mkdir -p tmp/pids
+        exec bin/rails server -b 0.0.0.0 -p 3000
+
+  jobs:
+    <<: *app
+    depends_on:
+      db-prepare:
+        condition: service_completed_successfully
+    command: ["bin/jobs"]

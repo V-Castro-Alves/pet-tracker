@@ -81,5 +81,10 @@ Before handing off, report which checks passed and clearly identify anything tha
 
 ## Tooling notes
 
+- Both Docker images need `libssl-dev` during gem installation: `web-push` depends on a native OpenSSL gem that requires development headers.
+
+- `compose.yaml` uses `Dockerfile.dev` and bind-mounts the repository, including existing development databases and push keys in `storage/`. Do not run host and container development servers/workers simultaneously against that data. Container user/group IDs must match the host (`LOCAL_UID`/`LOCAL_GID`, default 1000); container temporary files use tmpfs.
+- Compose runs `web` and `jobs` separately with `SOLID_QUEUE_IN_PUMA=0`; both wait for the one-off `db-prepare` service to succeed. Keep database preparation out of their individual startup commands to avoid concurrent migrations.
+
 - `bin/brakeman` forces an online latest-version check and may fail in restricted or offline environments before scanning. If that happens, run `bundle exec brakeman --no-pager` and report the binstub limitation.
 - If the home directory is read-only, point Bundler Audit's advisory database at a writable temporary path with `--database`; do not repurpose `HOME`.

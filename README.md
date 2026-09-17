@@ -44,7 +44,34 @@ Pet Tracker is built as a robust, modern Ruby on Rails monolith:
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### Development with Docker Compose
+
+With Docker Engine, Docker Compose, and the Docker Buildx plugin installed, start the app from this directory:
+
+```bash
+docker compose up -d
+```
+
+The first run builds the development image and installs dependencies. Open `http://localhost:3000`. A one-off `db-prepare` service prepares the databases before `web` starts Rails and `jobs` starts the reminder worker and recurring scheduler. All three services use the same image; `db-prepare` exiting successfully is normal.
+
+The repository is mounted into the container, so code changes reload and your existing `storage/` databases, uploads, and development push keys are preserved. Stop any locally running Rails server before starting Compose; use only one development server/worker against these databases at a time.
+
+```bash
+docker compose logs -f web jobs            # View server and worker output
+docker compose restart web                # Restart Rails independently
+docker compose restart jobs               # Restart the worker and scheduler
+docker compose down                        # Stop; local data stays in storage/
+docker compose up -d --build                # Rebuild after Gemfile.lock/image changes
+docker compose exec web bin/rails console  # Open a Rails console
+```
+
+On Linux, the image defaults to user/group ID 1000. If `id -u` or `id -g` differs, add `LOCAL_UID` and `LOCAL_GID` with those values to a git-ignored `.env` file before building. After changing them, run `docker compose up -d --build`.
+
+This is a development setup. The existing `Dockerfile` remains the production image. Browser system tests still require Chrome and should use the host setup below.
+
+After pulling changes with migrations, stop the services and run `docker compose up -d --build` again so database preparation completes before they resume. Restart `jobs` after changing job code.
+
+### Host prerequisites
 
 Make sure you have the following installed on your machine:
 - **Ruby** (v3.4.10)
