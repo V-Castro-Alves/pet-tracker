@@ -3,7 +3,9 @@ Rails.application.routes.draw do
   resource :registration, only: %i[new create]
   resources :passwords, param: :token
   resources :pets do
-    resources :meal_slots, except: :show
+    resources :meal_slots, except: :show do
+      resource :reminder, only: %i[edit update], controller: :meal_reminders
+    end
     resources :meal_logs, only: %i[index new create]
     resources :food_bags, only: %i[index new create] do
       patch :finish, on: :member

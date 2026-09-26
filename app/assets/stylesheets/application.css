@@ -215,3 +215,6 @@ textarea { resize: vertical; }
 }
 
 [hidden] { display: none !important; }
+
+.push-settings dialog { max-width: min(32rem, calc(100vw - 2rem)); padding: 1.5rem; color: var(--ink); background: var(--surface); border: 1px solid var(--border); border-radius: 1rem; }
+.push-settings dialog::backdrop { background: rgb(0 0 0 / 40%); }

@@ -1,19 +1,19 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["status", "enable", "disable"]
+  static targets = ["status", "enable", "disable", "dialog"]
   static values = { publicKey: String, createUrl: String, destroyUrl: String }
 
   async connect() {
     this.enableTarget.disabled = true
     this.disableTarget.hidden = true
     if (!this.publicKeyValue) {
-      this.statusTarget.textContent = "Push notifications are not configured on this server."
+      this.statusMessage = "Push notifications are not configured on this server."
       this.enableTarget.hidden = true
       return
     }
     if (!window.isSecureContext || !("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
-      this.statusTarget.textContent = "This browser cannot enable push here. On iPhone or iPad, add Pet Tracker to your Home Screen and open it there. Otherwise, use a browser that supports push over HTTPS."
+      this.statusMessage = "This browser cannot enable push here. On iPhone or iPad, add Pet Tracker to your Home Screen and open it there. Otherwise, use a browser that supports push over HTTPS."
       this.enableTarget.hidden = true
       return
     }
@@ -25,11 +25,28 @@ export default class extends Controller {
       // A browser subscription alone does not prove it was saved for this account.
       if (this.subscription) await this.saveSubscription()
       this.renderState()
+      if (!this.subscription) this.open()
     } catch (error) {
       this.showError(error)
     } finally {
       this.enableTarget.disabled = !this.registration
     }
+  }
+
+  set statusMessage(message) {
+    this.statusTargets.forEach(target => { target.textContent = message })
+  }
+
+  open() {
+    if (!this.dialogTarget.open) this.dialogTarget.showModal()
+  }
+
+  close() {
+    this.dialogTarget.close()
+  }
+
+  disconnect() {
+    this.close()
   }
 
   async enable() {
@@ -39,10 +56,10 @@ export default class extends Controller {
       // Request permission directly from the click, before any other await.
       const permission = await Notification.requestPermission()
       if (permission !== "granted") {
-        this.statusTarget.textContent = "Notification permission was not granted. Allow notifications in your browser's site settings, then try again."
+        this.statusMessage = "Notification permission was not granted. Allow notifications in your browser's site settings, then try again."
         return
       }
-      this.statusTarget.textContent = "Enabling notifications…"
+      this.statusMessage = "Enabling notifications…"
       this.subscription = await this.withTimeout(this.registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: this.decodeKey(this.publicKeyValue)
@@ -102,15 +119,16 @@ export default class extends Controller {
   }
 
   showError(error) {
-    this.statusTarget.textContent = `Push setup failed: ${error.message || "Please reload and try again."}`
+    this.statusMessage = `Push setup failed: ${error.message || "Please reload and try again."}`
     this.enableTarget.hidden = false
   }
 
   renderState() {
     const enabled = Boolean(this.subscription)
-    this.statusTarget.textContent = enabled ? "Push notifications are enabled on this device." : "Push notifications are not enabled on this device."
+    this.statusMessage = enabled ? "Push notifications are enabled on this device." : "Push notifications are not enabled on this device."
     this.enableTarget.hidden = enabled
     this.disableTarget.hidden = !enabled
+    if (enabled) this.close()
   }
 
   headers() {

@@ -13,25 +13,30 @@ class NotificationsTest < ApplicationSystemTestCase
   end
   test "caretaker changes their meal reminder" do
     sign_in_as users(:one)
-    visit edit_pet_meal_slot_path(pets(:one), meal_slots(:breakfast))
-    set_control "#reminder_preference_delay_minutes", "5"
-    submit_form "Update Meal slot"
-    assert_text "Breakfast was updated."
-    visit edit_pet_meal_slot_path(pets(:one), meal_slots(:breakfast))
-    assert_field "Grace window (minutes after meal time)", with: "5"
-    select "No reminders for this meal", from: "Remind me if this meal has not been logged"
-    submit_form "Update Meal slot"
-    assert_text "Breakfast was updated."
-    visit edit_pet_meal_slot_path(pets(:one), meal_slots(:breakfast))
-    assert_select "Remind me if this meal has not been logged", selected: "No reminders for this meal"
+    visit edit_pet_meal_slot_reminder_path(pets(:one), meal_slots(:breakfast))
+    select "On meal time", from: "Monday notifications"
+    select "After 30 min not logged", from: "Saturday notifications"
+    select "Custom time", from: "Sunday notifications"
+    set_control "#minutes_0", "45"
+    submit_form "Save my reminders"
+    assert_text "Your reminders were updated."
+    visit edit_pet_meal_slot_reminder_path(pets(:one), meal_slots(:breakfast))
+    assert_select "Monday notifications", selected: "On meal time"
+    assert_select "Saturday notifications", selected: "After 30 min not logged"
+    assert_field "Sunday custom delay (minutes)", with: "45"
+    select "No notifications", from: "Monday notifications"
+    submit_form "Save my reminders"
+    visit edit_pet_meal_slot_reminder_path(pets(:one), meal_slots(:breakfast))
+    assert_select "Monday notifications", selected: "No notifications"
   end
+
   test "unconfigured push hides both device buttons" do
     original_public = ENV.delete("VAPID_PUBLIC_KEY")
     original_private = ENV.delete("VAPID_PRIVATE_KEY")
     sign_in_as users(:one)
     visit notifications_path
     assert_text "Push notifications are not configured on this server."
-    assert_no_button "Enable push"
+    assert_no_button "Activate notifications"
     assert_no_button "Disable push"
   ensure
     ENV["VAPID_PUBLIC_KEY"] = original_public
@@ -42,14 +47,35 @@ class NotificationsTest < ApplicationSystemTestCase
     sign_in_as users(:one)
     visit notifications_path
     prepare_push_browser
-    execute_script "arguments[0].click()", find_button("Enable push")
+    execute_script "arguments[0].click()", find_button("Activate notifications")
     assert_text "Push notifications are enabled on this device."
-    assert_no_button "Enable push"
+    assert_no_button "Activate notifications"
     assert_button "Disable push"
     execute_script "arguments[0].click()", find_button("Disable push")
     assert_text "Push notifications are not enabled on this device."
-    assert_button "Enable push"
+    click_button "Device notification settings"
+    assert_button "Activate notifications"
     assert_no_button "Disable push"
+  end
+
+  test "device check opens a dismissible setup popup when push is missing" do
+    sign_in_as users(:one)
+    visit notifications_path
+    prepare_push_browser
+    click_button "Not now"
+    execute_script <<~JS
+      const element = document.querySelector("[data-controller='push-notifications']")
+      const controller = window.Stimulus.getControllerForElementAndIdentifier(element, "push-notifications")
+      const registration = { pushManager: { getSubscription: async () => null } }
+      Object.defineProperty(navigator.serviceWorker, "register", { configurable: true, value: async () => registration })
+      Object.defineProperty(navigator.serviceWorker, "ready", { configurable: true, value: Promise.resolve(registration) })
+      controller.connect()
+    JS
+    assert_selector "dialog[open]"
+    assert_button "Activate notifications", disabled: false
+    click_button "Not now"
+    assert_no_selector "dialog[open]"
+    assert_no_button "Activate notifications"
   end
 
   test "failed subscription save shows an error instead of success" do
@@ -57,10 +83,10 @@ class NotificationsTest < ApplicationSystemTestCase
     visit notifications_path
     prepare_push_browser
     execute_script 'window.fetch = async () => new Response("", { status: 422 })'
-    execute_script "arguments[0].click()", find_button("Enable push")
+    execute_script "arguments[0].click()", find_button("Activate notifications")
     assert_text "Could not save device settings."
     assert_no_text "Push notifications are enabled on this device."
-    assert_button "Enable push", disabled: false
+    assert_button "Activate notifications", disabled: false
   end
 
   test "new notifications and badge arrive without a page refresh" do
@@ -93,6 +119,7 @@ class NotificationsTest < ApplicationSystemTestCase
           unsubscribe: async () => true
         }
         controller.registration = { pushManager: { subscribe: async () => subscription } }
+        controller.open()
         controller.enableTarget.hidden = false
         controller.enableTarget.disabled = false
       JS

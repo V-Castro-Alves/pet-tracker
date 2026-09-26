@@ -18,8 +18,9 @@ module Meals
 
           recipient_ids = pet.users.filter_map do |user|
             preference = slot.meal_reminder_preferences.find { |setting| setting.user_id == user.id }
-            next if preference && !preference.enabled?
-            due_at = occurrence.scheduled_for + (preference&.delay_minutes || 60).minutes
+            delay = preference ? preference.delay_for(date) : 60
+            next if delay.nil?
+            due_at = occurrence.scheduled_for + delay.minutes
             user.id if due_at <= now && due_at >= now - 1.day
           end
           Notifications::Publish.new(

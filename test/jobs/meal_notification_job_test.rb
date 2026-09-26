@@ -56,6 +56,27 @@ class MealNotificationJobTest < ActiveJob::TestCase
     assert_equal [ users(:one).id ], pet.notifications.where(deduplication_key: next_key).pluck(:user_id)
   end
 
+  test "weekday settings use the meal date across midnight and suppress disabled days" do
+    pet = pets(:one)
+    pet.update!(time_zone: "Brasilia")
+    slot = meal_slots(:breakfast)
+    slot.update!(scheduled_time: "23:50", created_at: Time.utc(2026, 9, 1))
+    slot.meal_reminder_preferences.create!(user: users(:one), weekday_delays: { "5" => 0, "6" => 30, "0" => nil })
+    friday = Time.utc(2026, 9, 5, 2, 50)
+    saturday = friday + 1.day
+    sunday = saturday + 1.day
+    key = ->(time) { "meal:#{slot.id}:#{time.to_i}" }
+    MealNotificationJob.perform_now(now: friday)
+    assert_equal 1, pet.notifications.where(deduplication_key: key.call(friday)).count
+    MealNotificationJob.perform_now(now: saturday + 29.minutes)
+    assert_empty pet.notifications.where(deduplication_key: key.call(saturday))
+    MealNotificationJob.perform_now(now: saturday + 30.minutes)
+    MealNotificationJob.perform_now(now: saturday + 31.minutes)
+    assert_equal 1, pet.notifications.where(deduplication_key: key.call(saturday)).count
+    MealNotificationJob.perform_now(now: sunday + 60.minutes)
+    assert_empty pet.notifications.where(deduplication_key: key.call(sunday))
+  end
+
   test "resolved meals and inactive slots do not notify" do
     slot = meal_slots(:breakfast)
     scheduled = meal_logs(:breakfast_today).scheduled_for

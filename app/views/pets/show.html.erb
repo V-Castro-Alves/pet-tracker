@@ -66,6 +66,6 @@
     </div>
   <% else %>
     <p class="muted">No feeding times yet.</p>
-    <%= link_to "Set up meals", new_pet_meal_slot_path(@pet), class: "button button-primary button-fit" %>
+    <%= link_to "Set up meals", new_pet_meal_slot_path(@pet), class: "button button-primary button-fit" if @pet.administered_by?(Current.user) %>
   <% end %>
 </section>

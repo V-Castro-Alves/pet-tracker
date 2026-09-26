@@ -4,10 +4,6 @@
   <%= render "notifications/actions", user: Current.user %>
 </section>
 
-<section class="dashboard-section push-settings" data-controller="push-notifications" data-push-notifications-public-key-value="<%= (ENV["VAPID_PUBLIC_KEY"] if ENV["VAPID_PRIVATE_KEY"].present?) %>" data-push-notifications-create-url-value="<%= push_subscriptions_path %>" data-push-notifications-destroy-url-value="<%= push_subscription_path("current") %>">
-  <div><h2>Device notifications</h2><p class="muted" role="status" aria-live="polite" data-push-notifications-target="status">Checking this device…</p></div>
-  <button type="button" class="button button-primary button-fit" data-push-notifications-target="enable" data-action="push-notifications#enable" disabled>Enable push</button>
-  <button type="button" class="button button-secondary" data-push-notifications-target="disable" data-action="push-notifications#disable" hidden>Disable push</button>
-</section>
+<%= render "notifications/device_settings" %>
 
 <%= render "notifications/list", notifications: @notifications %>
