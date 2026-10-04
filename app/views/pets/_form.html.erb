@@ -27,7 +27,7 @@
   <div class="photo-picker">
     <div class="photo-preview">
       <% if pet.photo.attached? && pet.persisted? %>
-        <%= image_tag pet.photo.variant(resize_to_fill: [240, 240]), alt: "Current photo of #{pet.name}", data: { photo_preview_target: "image" } %>
+        <%= image_tag pet.photo.variant(resize_to_limit: [320, 320]), alt: "Current photo of #{pet.name}", data: { photo_preview_target: "image" } %>
       <% else %>
         <img alt="Selected pet photo preview" hidden data-photo-preview-target="image">
         <span data-photo-preview-target="placeholder" aria-hidden="true">📷</span>

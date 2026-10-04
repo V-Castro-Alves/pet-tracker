@@ -30,6 +30,12 @@ This file is the durable source of implementation milestone status. Product beha
   - User-scoped Turbo updates, cross-process development broadcasts, and a valid VAPID contact URI. Apple accepted a test push and receipt on the iPhone was confirmed.
 - [x] Weekday meal reminders
   - Admin-only meal schedules, personal weekday timing and custom delays, and device push setup prompts.
+- [x] Mobile-first frontend refresh
+  - Compact, proportional pet photos, persistent navigation, accessible touch controls, and meal-first pet profiles.
+  - Host Chrome verified navigation and overflow at 320/390/768/1280px. Rails suite: 121 tests, 373 assertions passed. Standard system suite is blocked by container ChromeDriver startup; rack-test fallback does not pass the browser-dependent suite.
+- [x] Daily-care dashboard
+  - All-pet personal meal reminders grouped by due/upcoming, with pet creation moved to the pet directory. Honors personal opt-outs, pet-local occurrence dates, and fed/skipped records.
+  - Rails suite: 129 tests, 405 assertions passed; lint and security audits passed. Host Chrome verified responsive layouts, exact meal links, reminder removal after logging, and secondary pet creation. Full Selenium suite remains unverified due to the container ChromeDriver limitation above.
 - [ ] PWA and production completion
   - Offline behavior, device testing, deployment configuration, backup/restore validation, accessibility, and final documentation.
 

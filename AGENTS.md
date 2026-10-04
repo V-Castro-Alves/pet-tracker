@@ -25,9 +25,11 @@ The README and specification files describe both implemented and planned feature
 - Use a real HTTPS or mailto URI for `VAPID_SUBJECT`; Apple rejects local placeholder subjects with `BadJwtToken`. A failed push subscription must not prevent attempts to the user’s other devices.
 - Meal schedules can only be created, edited, or removed by pet administrators. Caretakers edit their own reminders through the separate meal reminder endpoint. Weekday overrides use the occurrence date in the pet’s time zone (including delays across midnight); a null override disables that day, while a missing override retains the legacy delay.
 - Personal meal reminders use `MealReminderPreference` per user and slot (missing preference means enabled with 60 minutes). Only the signed-in user may edit their preference. Keep the single per-occurrence notification key stable, honor opt-out, and suppress fed/skipped occurrences. Development scheduling requires the queue database (`bin/rails db:prepare`); Puma starts the worker and scheduler automatically. Use `SOLID_QUEUE_IN_PUMA=0` when running `bin/jobs` separately.
+- The Today dashboard uses the viewer’s time zone for its day boundary and displayed times, but reminder weekday preferences and logging links use the occurrence date in the pet’s time zone. Keep its recent pending window aligned with `Meals::PublishReminders`.
 - Meal reminders and unresolved-meal detection use each pet's time zone. Keep recurring jobs time-zone-aware and pass explicit times/dates in tests.
 - Meal occurrences must not predate the meal slot's creation date in the pet's time zone; new schedules do not create a retroactive unresolved backlog.
 - Use strong parameters through Rails `params.expect` conventions already present in the controllers.
+- Pet photos use bounded square frames with `resize_to_limit` variants and `object-fit: contain`; preserve the full image rather than stretching or cropping it to card width.
 - Prefer the existing Hotwire/server-rendered approach over introducing a separate frontend framework.
 - Do not edit unrelated user changes or generated dependency files unless the task requires it.
 

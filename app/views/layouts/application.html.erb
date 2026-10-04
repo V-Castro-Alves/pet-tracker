@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
     <title><%= content_for(:title) || "Pet Tracker" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Pet Tracker">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <%= tag.meta name: "theme-color", content: "#247a55" %>
+    <%= tag.meta name: "theme-color", content: "#176b58" %>
 
     <%= yield :head %>
 
@@ -24,25 +24,32 @@
   </head>
 
   <body>
+    <a href="#main-content" class="skip-link">Skip to content</a>
     <header class="site-header">
       <%= link_to root_path, class: "brand" do %>
-        <span aria-hidden="true">🐾</span>
+        <span aria-hidden="true"><%= render "shared/paw" %></span>
         <span>Pet Tracker</span>
       <% end %>
 
       <% if authenticated? %>
         <%= turbo_stream_from Current.user, :notifications %>
-        <nav class="header-actions" aria-label="Account">
-          <%= link_to notifications_path, class: "notification-link" do %>
-            Notifications
+        <%= button_to "Sign out", session_path, method: :delete, class: "link-button sign-out" %>
+        <nav class="app-navigation" aria-label="Main navigation">
+          <%= link_to root_path, aria: { current: ("page" if controller_name == "dashboard") } do %>
+            <span aria-hidden="true">⌂</span> Today
+          <% end %>
+          <%= link_to pets_path, aria: { current: ("page" if controller_name == "pets") } do %>
+            <%= render "shared/paw" %> Your pets
+          <% end %>
+          <%= link_to notifications_path, class: "notification-link", aria: { current: ("page" if controller_name == "notifications") } do %>
+            <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg> Notifications
             <%= render "notifications/badge", user: Current.user %>
           <% end %>
-          <%= button_to "Sign out", session_path, method: :delete, class: "link-button" %>
         </nav>
       <% end %>
     </header>
 
-    <main class="container">
+    <main class="container" id="main-content">
       <% flash.each do |type, message| %>
         <div class="flash flash-<%= type %>" role="status"><%= message %></div>
       <% end %>
