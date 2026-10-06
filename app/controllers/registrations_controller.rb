@@ -10,7 +10,7 @@ class RegistrationsController < ApplicationController
 
     if @user.save
       start_new_session_for(@user)
-      redirect_to after_registration_url, notice: "Welcome to Pet Tracker!"
+      redirect_to after_registration_url, notice: "Welcome to Household!"
     else
       render :new, status: :unprocessable_entity
     end
@@ -28,7 +28,7 @@ class RegistrationsController < ApplicationController
 
     def after_registration_url
       protected_destination = session.delete(:return_to_after_authenticating)
-      return protected_destination if protected_destination && URI.parse(protected_destination).path.start_with?("/invites/")
+      return protected_destination if protected_destination && URI.parse(protected_destination).path.start_with?("/invites/", "/household_invites/")
 
       root_url
     rescue URI::InvalidURIError

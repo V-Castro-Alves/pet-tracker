@@ -26,6 +26,7 @@ class PetInvitesController < ApplicationController
   private
     def set_pet
       @pet = current_user_pet!
+      redirect_to @pet.household if @pet.household
     end
 
     def require_pet_admin

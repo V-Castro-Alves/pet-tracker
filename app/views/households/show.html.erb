@@ -1,0 +1,12 @@
+<h1><%= @household.name %></h1>
+<p><%= link_to "Tasks", household_tasks_path(@household) %> · <%= link_to "Integrations", household_integrations_path(@household) %></p>
+<% if @household.pets_enabled? %><p><%= link_to "Add pet", new_pet_path(household_id: @household.public_id) %></p><% @household.pets.each do |pet| %><p><%= link_to pet.name, pet %></p><% end %><% end %>
+<h2>Members</h2>
+<% @household.memberships.includes(:user).each do |membership| %>
+  <p><%= membership.user.name %> <%= "(administrator)" if membership.admin? %></p>
+  <% if membership.user == Current.user || @household.administered_by?(Current.user) %><%= button_to "Remove #{membership.user.name}", household_membership_path(@household, membership.user.public_id), method: :delete %><% end %>
+<% end %>
+<% if @household.administered_by?(Current.user) %>
+  <h2>Invite someone</h2><%= form_with url: household_household_invitations_path(@household), class: "household-form" do |form| %><%= form.label :email, "Email restriction (optional)" %><%= form.email_field :email %><%= form.submit "Create invitation link" %><% end %>
+  <h2>Settings</h2><%= render "form", household: @household %>
+<% end %>

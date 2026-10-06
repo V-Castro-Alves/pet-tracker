@@ -1,0 +1,10 @@
+<h1><%= @household.name %> tasks</h1><%= link_to "New task", new_household_task_path(@household), class: "button" %>
+<% @tasks.each do |task| %><article class="card" data-controller="task-action">
+<h2><%= task.title %></h2><p><%= task.local_time %> · <%= task.recurrence %></p>
+<%= link_to "Edit", edit_household_task_path(@household, task) %>
+<label>Responsible person<select data-action="change->task-action#assign" data-url="<%= api_v1_household_task_path(@household, task) %>"><option value="">Anyone</option><% @household.users.each do |user| %><option value="<%= user.public_id %>" <%= "selected" if task.assignee_id == user.id %>><%= user.name %></option><% end %></select></label>
+<%= link_to "Reminder timing", edit_household_task_reminder_path(@household, task) %>
+<% preference = task.task_reminder_preferences.find_by(user: Current.user) %>
+<label><input type="checkbox" <%= "checked" if preference ? preference.enabled? : task.assignee_id.nil? || task.assignee_id == Current.user.id %> data-action="change->task-action#reminder" data-url="<%= api_v1_household_task_reminder_path(@household, task) %>"> Remind me</label>
+<p role="status" data-task-action-target="message"></p><%= button_to "Archive", household_task_path(@household, task), method: :delete %>
+</article><% end %>

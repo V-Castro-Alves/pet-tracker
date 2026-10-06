@@ -2,7 +2,7 @@ class QrMealLogsController < ApplicationController
   def show
     pet = Pet.find_by!(qr_token: params[:qr_token])
 
-    unless pet.users.exists?(Current.user.id)
+    unless Current.user.pets.exists?(id: pet.id)
       render :forbidden, status: :forbidden
       return
     end

@@ -1,5 +1,5 @@
 class Notification < ApplicationRecord
-  KINDS = %w[meal_reminder meal_unresolved food_low vaccine_due].freeze
+  KINDS = %w[task_due meal_reminder meal_unresolved food_low vaccine_due].freeze
 
   belongs_to :user
   belongs_to :pet, optional: true

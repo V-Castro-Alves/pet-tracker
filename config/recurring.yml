@@ -10,6 +10,10 @@
 #     schedule: at 5am every day
 
 development: &scheduled_notifications
+  household_scheduler:
+    class: HouseholdSchedulerJob
+    queue: background
+    schedule: every minute
   unresolved_meal_notifications:
     class: MealNotificationJob
     queue: background

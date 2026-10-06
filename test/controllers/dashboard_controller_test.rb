@@ -28,8 +28,8 @@ class DashboardControllerTest < ActionDispatch::IntegrationTest
     PetUser.where(user: users(:one)).delete_all
     sign_in_as users(:one)
     get root_url
-    assert_select "h2", "Add your first pet"
-    assert_select "a[href=?]", new_pet_path, count: 1
+    assert_select "h2", "Create your first household"
+    assert_select "a[href=?]", new_household_path, count: 1
     assert_select ".reminder-card", count: 0
   end
 

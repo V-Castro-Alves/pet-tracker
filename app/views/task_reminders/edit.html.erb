@@ -1,0 +1,9 @@
+<h1>Your reminders for <%= @task.title %></h1>
+<p>Weekdays follow the task’s time zone: <%= @task.time_zone %>.</p>
+<%= form_with scope: :reminder, url: household_task_reminder_path(@household, @task), method: :patch, class: "household-form" do |form| %>
+<label><%= form.check_box :enabled, checked: @preference.enabled? %> Remind me</label>
+<div class="field"><%= form.label :delay_minutes, "Minutes after the scheduled time" %><%= form.number_field :delay_minutes, value: @preference.delay_minutes, min: 0, max: 1440, required: true %></div>
+<% Date::DAYNAMES.each_with_index do |name, day| %>
+<% value = @preference.weekday_delays[day.to_s]; mode = @preference.weekday_delays.key?(day.to_s) ? (value.nil? ? "off" : "custom") : "default" %>
+<fieldset><legend><%= name %></legend><div class="field"><%= label_tag "weekday_#{day}", "Reminder timing" %><%= select_tag "reminder[weekdays][#{day}][mode]", options_for_select([["Use usual delay", "default"], ["No reminder", "off"], ["Custom delay", "custom"]], mode), id: "weekday_#{day}" %></div><div class="field"><%= label_tag "minutes_#{day}", "Custom delay in minutes" %><%= number_field_tag "reminder[weekdays][#{day}][minutes]", value || @preference.delay_minutes, min: 0, max: 1440, id: "minutes_#{day}" %></div></fieldset>
+<% end %><%= form.submit "Save reminders" %><% end %>

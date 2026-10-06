@@ -1,0 +1,3 @@
+<h1>Your households</h1>
+<%= link_to "Create household", new_household_path, class: "button" %>
+<% @households.each do |household| %><article class="card"><h2><%= link_to household.name, household %></h2><p><%= household.time_zone %></p></article><% end %>

@@ -1,0 +1,2280 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Household Responsibilities API",
+    "version": "1.0.0",
+    "description": "Task schedules are embedded in tasks. IDs are opaque. Collection page size is 50. Mutation idempotency keys are scoped to the user; retries must use the same credential, path and exact body. No cross-origin browser API access is enabled."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    },
+    {
+      "browserSession": []
+    }
+  ],
+  "paths": {
+    "/api/v1/households": {
+      "get": {
+        "summary": "List accessible households",
+        "description": "Required token scope: tasks:read. Browser sessions require CSRF protection on mutations.",
+        "operationId": "get__api_v1_households",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Household"
+                      }
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "per_page": {
+                      "type": "integer",
+                      "const": 50
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/households/{household_id}/members": {
+      "get": {
+        "summary": "List household members",
+        "description": "Required token scope: tasks:read. Browser sessions require CSRF protection on mutations.",
+        "operationId": "get__api_v1_households_household_id_members",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Member"
+                      }
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "per_page": {
+                      "type": "integer",
+                      "const": 50
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/households/{household_id}/tasks": {
+      "get": {
+        "summary": "List active tasks",
+        "description": "Required token scope: tasks:read. Browser sessions require CSRF protection on mutations.",
+        "operationId": "get__api_v1_households_household_id_tasks",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Task"
+                      }
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "per_page": {
+                      "type": "integer",
+                      "const": 50
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create task and schedule",
+        "description": "Required token scope: tasks:write. Browser sessions require CSRF protection on mutations.",
+        "operationId": "post__api_v1_households_household_id_tasks",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Task"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "task"
+                ],
+                "properties": {
+                  "task": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "notes": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "category": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "assignee_id": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "pet_id": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "recurrence": {
+                        "type": "string",
+                        "enum": [
+                          "once",
+                          "daily",
+                          "weekly"
+                        ]
+                      },
+                      "starts_on": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "local_time": {
+                        "type": "string",
+                        "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                      },
+                      "weekdays": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 6
+                        }
+                      },
+                      "time_zone": {
+                        "type": "string",
+                        "description": "Rails time-zone name, e.g. UTC or Eastern Time (US & Canada)."
+                      },
+                      "feeding_amount_g": {
+                        "type": [
+                          "string",
+                          "number",
+                          "null"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "title",
+                      "starts_on",
+                      "local_time"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/households/{household_id}/tasks/{id}": {
+      "patch": {
+        "summary": "Update task and schedule",
+        "description": "Required token scope: tasks:write. Browser sessions require CSRF protection on mutations.",
+        "operationId": "patch__api_v1_households_household_id_tasks_id",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Task"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "task"
+                ],
+                "properties": {
+                  "task": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "notes": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "category": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "assignee_id": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "pet_id": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "recurrence": {
+                        "type": "string",
+                        "enum": [
+                          "once",
+                          "daily",
+                          "weekly"
+                        ]
+                      },
+                      "starts_on": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "local_time": {
+                        "type": "string",
+                        "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                      },
+                      "weekdays": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 6
+                        }
+                      },
+                      "time_zone": {
+                        "type": "string",
+                        "description": "Rails time-zone name, e.g. UTC or Eastern Time (US & Canada)."
+                      },
+                      "feeding_amount_g": {
+                        "type": [
+                          "string",
+                          "number",
+                          "null"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Read a task",
+        "description": "Required token scope: tasks:read. Browser sessions require CSRF protection on mutations.",
+        "operationId": "get__api_v1_households_household_id_tasks_id",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Task"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Archive task",
+        "description": "Required token scope: tasks:write. Browser sessions require CSRF protection on mutations.",
+        "operationId": "delete__api_v1_households_household_id_tasks_id",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Task"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update task and schedule",
+        "description": "Required token scope: tasks:write. Browser sessions require CSRF protection on mutations. PUT is accepted as an alias for PATCH; omitted fields are preserved.",
+        "operationId": "put__api_v1_households_household_id_tasks_id",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Task"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "task"
+                ],
+                "properties": {
+                  "task": {
+                    "type": "object",
+                    "properties": {
+                      "title": {
+                        "type": "string"
+                      },
+                      "notes": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "category": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "assignee_id": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "pet_id": {
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "recurrence": {
+                        "type": "string",
+                        "enum": [
+                          "once",
+                          "daily",
+                          "weekly"
+                        ]
+                      },
+                      "starts_on": {
+                        "type": "string",
+                        "format": "date"
+                      },
+                      "local_time": {
+                        "type": "string",
+                        "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+                      },
+                      "weekdays": {
+                        "type": "array",
+                        "items": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 6
+                        }
+                      },
+                      "time_zone": {
+                        "type": "string",
+                        "description": "Rails time-zone name, e.g. UTC or Eastern Time (US & Canada)."
+                      },
+                      "feeding_amount_g": {
+                        "type": [
+                          "string",
+                          "number",
+                          "null"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/households/{household_id}/occurrences": {
+      "get": {
+        "summary": "List occurrences",
+        "description": "Required token scope: tasks:read. Browser sessions require CSRF protection on mutations.",
+        "operationId": "get__api_v1_households_household_id_occurrences",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter value"
+          },
+          {
+            "name": "assignee_id",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter value"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Inclusive ISO 8601 lower timestamp bound"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            },
+            "description": "Exclusive ISO 8601 upper timestamp bound"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Occurrence"
+                      }
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "per_page": {
+                      "type": "integer",
+                      "const": 50
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/households/{household_id}/occurrences/{id}": {
+      "patch": {
+        "summary": "Complete or skip an occurrence",
+        "description": "Required token scope: tasks:write. Browser sessions require CSRF protection on mutations.",
+        "operationId": "patch__api_v1_households_household_id_occurrences_id",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Occurrence"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "occurrence"
+                ],
+                "properties": {
+                  "occurrence": {
+                    "type": "object",
+                    "required": [
+                      "status"
+                    ],
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "completed",
+                          "skipped"
+                        ]
+                      },
+                      "credited_user_id": {
+                        "type": "string"
+                      },
+                      "actual_amount_g": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Complete or skip an occurrence",
+        "description": "Required token scope: tasks:write. Browser sessions require CSRF protection on mutations. PUT is accepted as an alias for PATCH; omitted fields are preserved.",
+        "operationId": "put__api_v1_households_household_id_occurrences_id",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Occurrence"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "occurrence"
+                ],
+                "properties": {
+                  "occurrence": {
+                    "type": "object",
+                    "required": [
+                      "status"
+                    ],
+                    "properties": {
+                      "status": {
+                        "type": "string",
+                        "enum": [
+                          "completed",
+                          "skipped"
+                        ]
+                      },
+                      "credited_user_id": {
+                        "type": "string"
+                      },
+                      "actual_amount_g": {
+                        "type": "number",
+                        "exclusiveMinimum": 0
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/households/{household_id}/tasks/{task_id}/reminder": {
+      "get": {
+        "summary": "Read personal reminder settings",
+        "description": "Required token scope: tasks:read. Browser sessions require CSRF protection on mutations.",
+        "operationId": "get__api_v1_households_household_id_tasks_task_id_reminder",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Reminder"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update personal reminder settings",
+        "description": "Required token scope: reminders:write. Browser sessions require CSRF protection on mutations.",
+        "operationId": "patch__api_v1_households_household_id_tasks_task_id_reminder",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Reminder"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "reminder"
+                ],
+                "properties": {
+                  "reminder": {
+                    "$ref": "#/components/schemas/Reminder"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update personal reminder settings",
+        "description": "Required token scope: reminders:write. Browser sessions require CSRF protection on mutations. PUT is accepted as an alias for PATCH; omitted fields are preserved.",
+        "operationId": "put__api_v1_households_household_id_tasks_task_id_reminder",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "task_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "maxLength": 200
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "$ref": "#/components/schemas/Reminder"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        },
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "reminder"
+                ],
+                "properties": {
+                  "reminder": {
+                    "$ref": "#/components/schemas/Reminder"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/households/{household_id}/pets": {
+      "get": {
+        "summary": "List pet summaries when pet care is enabled",
+        "description": "Required token scope: pets:read. Browser sessions require CSRF protection on mutations.",
+        "operationId": "get__api_v1_households_household_id_pets",
+        "parameters": [
+          {
+            "name": "household_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Pet"
+                      }
+                    },
+                    "page": {
+                      "type": "integer"
+                    },
+                    "per_page": {
+                      "type": "integer",
+                      "const": 50
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing idempotency key",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication required",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Insufficient scope",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflicting request or resolved occurrence",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid input",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "browserSession": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "session_id",
+        "description": "Same-origin first-party browser only; also send X-CSRF-Token for mutations."
+      }
+    },
+    "schemas": {
+      "Error": {
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": [
+              "code",
+              "message"
+            ],
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "Household": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "time_zone": {
+            "type": "string"
+          },
+          "pets_enabled": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Member": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        }
+      },
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "category": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "assignee_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "pet_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "recurrence": {
+            "type": "string",
+            "enum": [
+              "once",
+              "daily",
+              "weekly"
+            ]
+          },
+          "starts_on": {
+            "type": "string",
+            "format": "date"
+          },
+          "local_time": {
+            "type": "string",
+            "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$"
+          },
+          "weekdays": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 6
+            }
+          },
+          "time_zone": {
+            "type": "string",
+            "description": "Rails time-zone name, e.g. UTC or Eastern Time (US & Canada)."
+          },
+          "feeding_amount_g": {
+            "type": [
+              "string",
+              "number",
+              "null"
+            ]
+          },
+          "archived_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "Occurrence": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "task_id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "scheduled_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "completed",
+              "skipped"
+            ]
+          },
+          "assignee_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "actor_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "credited_user_id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "resolved_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "Reminder": {
+        "type": "object",
+        "properties": {
+          "enabled": {
+            "type": "boolean"
+          },
+          "delay_minutes": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1440
+          },
+          "weekday_delays": {
+            "type": "object",
+            "description": "Keys 0\u20136 (Sunday\u2013Saturday). Null disables that weekday; missing key inherits delay_minutes.",
+            "additionalProperties": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 0,
+              "maximum": 1440
+            }
+          }
+        }
+      },
+      "Pet": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "species": {
+            "type": "string"
+          },
+          "time_zone": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

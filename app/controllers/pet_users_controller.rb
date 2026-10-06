@@ -20,5 +20,6 @@ class PetUsersController < ApplicationController
   private
     def set_pet
       @pet = current_user_pet!
+      redirect_to @pet.household if @pet.household
     end
 end

@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title><%= content_for(:title) || "Pet Tracker" %></title>
+    <title><%= content_for(:title) || "Household" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Pet Tracker">
+    <meta name="application-name" content="Household">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -28,16 +28,18 @@
     <header class="site-header">
       <%= link_to root_path, class: "brand" do %>
         <span aria-hidden="true"><%= render "shared/paw" %></span>
-        <span>Pet Tracker</span>
+        <span>Household</span>
       <% end %>
 
       <% if authenticated? %>
         <%= turbo_stream_from Current.user, :notifications %>
+        <%= turbo_stream_from Current.user, :tasks %>
         <%= button_to "Sign out", session_path, method: :delete, class: "link-button sign-out" %>
         <nav class="app-navigation" aria-label="Main navigation">
           <%= link_to root_path, aria: { current: ("page" if controller_name == "dashboard") } do %>
             <span aria-hidden="true">⌂</span> Today
           <% end %>
+          <%= link_to households_path do %><span aria-hidden="true">⌂</span> Households<% end %>
           <%= link_to pets_path, aria: { current: ("page" if controller_name == "pets") } do %>
             <%= render "shared/paw" %> Your pets
           <% end %>

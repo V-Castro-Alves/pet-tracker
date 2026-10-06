@@ -1,3 +1,5 @@
+> Historical pet-module specification. The current household product and integration contracts are documented in [docs/HOUSEHOLD_SPEC.md](docs/HOUSEHOLD_SPEC.md) and [docs/API.md](docs/API.md).
+
 # Pet Tracker — Functional Spec
 
 This document breaks the product spec down into concrete screens, flows, and edge cases. It assumes the decisions in `pet-tracker-spec.md` (roles, PWA, per-pet QR tokens, 60-min grace period, weigh-once meal amounts).

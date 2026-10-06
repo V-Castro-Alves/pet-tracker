@@ -1,3 +1,15 @@
+# Household responsibilities
+
+Shared household chores and optional pet care, built with Rails and Hotwire. Start by creating a household, inviting members, and adding tasks. Interactive task actions use `/api/v1`; scoped tokens and signed webhooks support external integrations.
+
+- [Current product specification](docs/HOUSEHOLD_SPEC.md)
+- [API and integration guide](docs/API.md)
+- [OpenAPI contract](public/openapi.json)
+- [Operations](docs/OPERATIONS.md)
+- [Roadmap](ROADMAP.md)
+
+The following original Pet Tracker documentation describes the retained pet module and historical setup.
+
 # 🐾 Pet Tracker
 
 A modern Progressive Web App (PWA) designed for pet owners, roommates, families, and caretakers to collaboratively log and track the daily care of their pets. No more guessing if the dog was fed, double-feeding the cat, or running out of kibble unexpectedly.

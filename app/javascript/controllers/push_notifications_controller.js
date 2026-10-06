@@ -13,7 +13,7 @@ export default class extends Controller {
       return
     }
     if (!window.isSecureContext || !("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
-      this.statusMessage = "This browser cannot enable push here. On iPhone or iPad, add Pet Tracker to your Home Screen and open it there. Otherwise, use a browser that supports push over HTTPS."
+      this.statusMessage = "This browser cannot enable push here. On iPhone or iPad, add Household to your Home Screen and open it there. Otherwise, use a browser that supports push over HTTPS."
       this.enableTarget.hidden = true
       return
     }

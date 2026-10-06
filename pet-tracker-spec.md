@@ -1,3 +1,5 @@
+> Historical pet-module specification. The current household product and integration contracts are documented in [docs/HOUSEHOLD_SPEC.md](docs/HOUSEHOLD_SPEC.md) and [docs/API.md](docs/API.md).
+
 # Pet Tracker — Product Spec
 
 ## 1. Overview

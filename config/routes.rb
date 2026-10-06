@@ -1,4 +1,28 @@
 Rails.application.routes.draw do
+  resources :households, only: %i[index new create show update] do
+    resources :tasks, except: :show do
+      resource :reminder, only: %i[edit update], controller: :task_reminders
+    end
+    resources :memberships, only: :destroy
+    resources :household_invitations, only: :create
+    resource :integrations, only: %i[show create destroy] do
+      post :replay
+    end
+  end
+  get "household_invites/:token", to: "household_invitations#show", as: :household_invitation
+  post "household_invites/:token", to: "household_invitations#accept"
+  namespace :api do
+    namespace :v1 do
+      resources :households, only: :index do
+        get "members", to: "households#members"
+        resources :tasks, only: %i[index show create update destroy] do
+          resource :reminder, only: %i[show update]
+        end
+        resources :occurrences, only: %i[index update]
+        resources :pets, only: :index
+      end
+    end
+  end
   resource :session
   resource :registration, only: %i[new create]
   resources :passwords, param: :token

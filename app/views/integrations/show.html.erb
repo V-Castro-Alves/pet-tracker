@@ -1,0 +1,14 @@
+<% if @raw_token || @webhook_secret %><% content_for :head do %><meta name="turbo-cache-control" content="no-cache"><% end %><% end %>
+<h1>Integrations — <%= @household.name %></h1>
+<% if @raw_token %><p>Copy this token now. It will not be shown again.</p><code><%= @raw_token %></code><% end %>
+<% if @webhook_secret %><p>Copy this webhook signing secret now.</p><code><%= @webhook_secret %></code><% end %>
+<p><%= link_to "OpenAPI contract", "/openapi.json" %></p>
+<h2>Personal access tokens</h2>
+<%= form_with url: household_integrations_path(@household), class: "household-form" do |form| %><%= hidden_field_tag :kind, "token" %><%= form.label :name %><%= form.text_field :name, required: true %><fieldset><legend>Scopes</legend><% ApiToken::SCOPES.each do |scope| %><label><%= check_box_tag "scopes[]", scope, false, id: "scope_#{scope.tr(":", "_")}" %><%= scope %></label><% end %></fieldset><p>Tokens expire after 90 days.</p><%= form.submit "Create token" %><% end %>
+<% @tokens.each do |token| %><p><%= token.name %> — <%= token.revoked_at ? "Revoked" : "Expires #{token.expires_at.to_date}" %></p><% unless token.revoked_at %><%= button_to "Revoke #{token.name}", household_integrations_path(@household), method: :delete, params: { kind: "token", record_id: token.id } %><% end %><% end %>
+<% if @household.administered_by?(Current.user) %>
+<h2>Background scheduler</h2><p><%= @heartbeat&.healthy? ? "Running normally" : "No recent successful run — check the background worker" %></p><% if @heartbeat&.completed_at %><p>Last successful run: <%= @heartbeat.completed_at.in_time_zone(Current.user.time_zone).strftime("%b %d, %H:%M:%S") %></p><% end %>
+<h2>Webhooks</h2><%= form_with url: household_integrations_path(@household), class: "household-form" do |form| %><%= hidden_field_tag :kind, "webhook" %><%= form.label :url, "Public HTTPS endpoint" %><%= form.url_field :url, required: true %><%= form.submit "Create webhook" %><% end %>
+<% @endpoints.each do |endpoint| %><p><%= endpoint.url %> — <%= endpoint.active? ? "Active" : "Disabled" %></p><%= button_to "Disable webhook", household_integrations_path(@household), method: :delete, params: { kind: "webhook", record_id: endpoint.id } if endpoint.active? %><% end %>
+<h2>Recent deliveries</h2><% @deliveries.each do |delivery| %><article><p><%= delivery.domain_event.kind %> — <%= delivery.delivered_at ? "Delivered" : "#{delivery.attempts} attempts" %></p><p><%= delivery.last_error %></p><%= button_to "Replay", replay_household_integrations_path(@household), params: { delivery_id: delivery.id } %></article><% end %>
+<% end %>

@@ -1,3 +1,40 @@
+# Household responsibilities roadmap
+
+The current product and API contracts are in `docs/HOUSEHOLD_SPEC.md`, `docs/API.md`, and `public/openapi.json`. Milestone status here is authoritative.
+
+## Pivot milestones
+
+- [x] Household foundation
+  - Household membership, administrators, seven-day single-use invitations, registration return flow, transactional removal and successor promotion, optional pet module, and onboarding.
+- [x] Tasks, persisted occurrences, and first-party API
+  - One-off/daily/weekday schedules, assignments, completion attribution, history, time-zone/DST behavior, API-backed completion/assignment/reminder controls, session/CSRF authentication, and durable mutation idempotency.
+- [x] Shared reminders and optional pet care
+  - Personal delay/weekday settings and opt-outs, scheduled notifications, household pet authorization, task-based feeding, atomic inventory deductions, additional feeding records, retained health/photo/QR workflows, and user-scoped live refresh.
+- [x] External integrations
+  - Expiring scoped token digests and revocation, transactional events, signed public-HTTPS webhooks, retries/replay/diagnostics, scheduler health, OpenAPI route coverage, and a standalone Ruby integration example.
+- [ ] Production launch verification
+  - Local Chrome flows, responsive checks, security audits, concurrent completion, and isolated SQLite restore are verified.
+  - Still requires an actual production host/registry configuration, live HTTPS verification, real-device push checks, and a production backup/restore drill including Active Storage and deployment secrets. No deployment or real-device delivery was performed during this pivot.
+
+## Current verification baseline — 2026-10-03
+
+- Rails suite: **154 tests, 515 assertions**, all passing (`PARALLEL_WORKERS=1 bin/rails test`).
+- Real headless-Chrome suite: **19 tests, 139 assertions**, all passing (`PARALLEL_WORKERS=1 bin/rails test:system`).
+- Chrome covered two household members, session-authenticated API actions with CSRF enabled, task/token/pet forms, and 320/390/768/1280px layouts without horizontal overflow.
+- RuboCop: **192 files**, no offenses. Rails autoloading and `git diff --check` pass.
+- Brakeman direct scan: **0 errors, 0 security warnings**. The repository binstub stops at its latest-version gate (installed 8.0.6 versus 8.1.0), so the scan used `bundle exec brakeman --no-pager`.
+- Bundler Audit and Importmap Audit: no known vulnerabilities. Bundler's advisory database was placed in `/tmp/pet-tracker-advisory-db`.
+- Isolated simultaneous feeding completion: one success, one conflict, one feeding record/event, and one 100g inventory deduction.
+- Isolated SQLite backup/restore: integrity, foreign keys, relevant table counts, and completed occurrence history passed. This does not verify production object storage or secrets recovery.
+
+## Compatibility boundary
+
+No existing-data migration was required or performed. Old pet-only routes/records remain available for repository fixtures and existing development data. Household feeding uses only the new occurrence engine; the legacy meal reminder job excludes household pets. New household pets inherit household membership and do not create legacy pet memberships.
+
+Webhook destinations currently require public IPv4 HTTPS on port 443. OAuth/voice adapters, hosted plugins, automatic rotation, custom fields, monthly recurrence, and offline writes remain deferred.
+
+## Historical Pet Tracker milestones
+
 # Pet Tracker implementation roadmap
 
 This file is the durable source of implementation milestone status. Product behavior and acceptance details remain in the product, functional, and technical specification files.
@@ -39,7 +76,7 @@ This file is the durable source of implementation milestone status. Product beha
 - [ ] PWA and production completion
   - Offline behavior, device testing, deployment configuration, backup/restore validation, accessibility, and final documentation.
 
-## Current verification baseline
+## Historical verification baseline
 
 After the weekday meal reminders and push setup popup changes:
 

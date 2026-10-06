@@ -1,4 +1,8 @@
 class User < ApplicationRecord
+  include PublicIdentifier
+  has_many :memberships, dependent: :destroy
+  has_many :households, through: :memberships
+  has_many :api_tokens, dependent: :destroy
   has_secure_password
   has_many :meal_reminder_preferences, dependent: :destroy
   has_many :sessions, dependent: :destroy
@@ -10,6 +14,10 @@ class User < ApplicationRecord
   has_many :medical_entries, foreign_key: :created_by_id, dependent: :restrict_with_error, inverse_of: :created_by
   has_many :notifications, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
+
+  def pets
+    Pet.where(household_id: households.where(pets_enabled: true).select(:id)).or(Pet.where(household_id: nil, id: pet_users.select(:pet_id)))
+  end
 
   normalizes :email_address, with: ->(email) { email.strip.downcase }
 

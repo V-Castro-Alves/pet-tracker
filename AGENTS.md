@@ -4,9 +4,19 @@ This file applies to the entire repository.
 
 ## Project overview
 
-Pet Tracker is a Ruby 3.4 / Rails 8 monolith using Hotwire, SQLite, Active Storage, and the default Rails authentication generator. Keep changes aligned with conventional Rails structure and the existing server-rendered UI.
+Household is a shared-responsibilities app with an optional pet module, built as a Ruby 3.4 / Rails 8 monolith using Hotwire, SQLite, Active Storage, and the default Rails authentication generator. Keep changes aligned with conventional Rails structure and the existing server-rendered UI.
 
 The README and specification files describe both implemented and planned features. Confirm behavior against the current routes, schema, models, controllers, and tests before assuming a documented feature exists.
+
+## Household pivot conventions
+
+- `docs/HOUSEHOLD_SPEC.md` is the current product specification; the root pet specifications describe historical behavior. `/openapi.json` is the public API contract; keep it and `docs/API.md` aligned with controller responses.
+- Household access is scoped through `Current.user.households` (or the authenticated API actor). Household pets inherit membership; legacy pet memberships must never grant access to a household pet.
+- Task HTML and API controllers share `Tasks` services. Browser task actions use session/CSRF authentication against `/api/v1`; personal tokens are only for external clients.
+- Persist occurrence IDs and preserve them for assignment/title changes. Schedule edits replace future pending occurrences only. Feeding completion and inventory deduction share a transaction through `Meals::RecordFeeding`.
+- API mutations require per-user idempotency keys. Recheck current household access before replaying a stored response. Tokens cannot exceed current membership or their household/scopes.
+- Durable events are written inside domain transactions. Webhook jobs lease attempts before releasing the database lock for network I/O; retain DNS pinning, public-address validation, TLS verification, and disabled redirects.
+- The old meal engine only serves household-less development records. Household feeding uses task occurrences; never run both reminder engines for the same pet.
 
 ## Working conventions
 
@@ -23,7 +33,7 @@ The README and specification files describe both implemented and planned feature
 - In-app notifications work without push configuration. Browser delivery additionally requires `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY`; never commit private VAPID material. Expired browser subscriptions should be removed during delivery. Development creates persistent keys in git-ignored `storage/development_vapid.json`; never commit that file or regenerate keys on each boot. Push UI must check subscription-save responses before reporting success, and CSS must honor `hidden` on buttons.
 - Live notification streams are scoped to the signed-in user. Development uses Solid Cable so job-process broadcasts reach Puma; prepare its database with `bin/rails db:prepare`. Bulk read updates must explicitly broadcast because `update_all` skips callbacks.
 - Use a real HTTPS or mailto URI for `VAPID_SUBJECT`; Apple rejects local placeholder subjects with `BadJwtToken`. A failed push subscription must not prevent attempts to the user’s other devices.
-- Meal schedules can only be created, edited, or removed by pet administrators. Caretakers edit their own reminders through the separate meal reminder endpoint. Weekday overrides use the occurrence date in the pet’s time zone (including delays across midnight); a null override disables that day, while a missing override retains the legacy delay.
+- Legacy pet-only meal schedules can only be created, edited, or removed by pet administrators. Household task schedules are collaborative. Caretakers edit their own reminders through the separate meal reminder endpoint. Weekday overrides use the occurrence date in the pet’s time zone (including delays across midnight); a null override disables that day, while a missing override retains the legacy delay.
 - Personal meal reminders use `MealReminderPreference` per user and slot (missing preference means enabled with 60 minutes). Only the signed-in user may edit their preference. Keep the single per-occurrence notification key stable, honor opt-out, and suppress fed/skipped occurrences. Development scheduling requires the queue database (`bin/rails db:prepare`); Puma starts the worker and scheduler automatically. Use `SOLID_QUEUE_IN_PUMA=0` when running `bin/jobs` separately.
 - The Today dashboard uses the viewer’s time zone for its day boundary and displayed times, but reminder weekday preferences and logging links use the occurrence date in the pet’s time zone. Keep its recent pending window aligned with `Meals::PublishReminders`.
 - Meal reminders and unresolved-meal detection use each pet's time zone. Keep recurring jobs time-zone-aware and pass explicit times/dates in tests.

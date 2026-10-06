@@ -1,0 +1,16 @@
+<%= form_with model: [@household, @task], class: "household-form" do |form| %>
+<p role="alert"><%= @task.errors.full_messages.to_sentence %></p>
+<%= form.label :title %><%= form.text_field :title, required: true %>
+<%= form.label :notes %><%= form.text_area :notes %>
+<%= form.label :category %><%= form.text_field :category %>
+<%= form.label :assignee_id, "Responsible person" %><%= form.select :assignee_id, @household.users.map { |user| [user.name, user.public_id] }, { include_blank: "Anyone", selected: @task.assignee&.public_id } %>
+<%= form.label :recurrence %><%= form.select :recurrence, [["One-off", "once"], ["Daily", "daily"], ["Selected weekdays", "weekly"]] %>
+<%= form.label :starts_on %><%= form.date_field :starts_on, required: true %>
+<%= form.label :local_time %><%= form.time_field :local_time, required: true %>
+<%= form.label :time_zone %><%= form.time_zone_select :time_zone %>
+<fieldset><legend>Weekdays (for selected weekdays)</legend><% Date::DAYNAMES.each_with_index do |name, day| %><label><%= check_box_tag "task[weekdays][]", day, @task.weekdays.include?(day), id: "task_weekday_#{day}" %><%= name %></label><% end %></fieldset>
+<% if @household.pets_enabled? %>
+<%= form.label :pet_id %><%= form.select :pet_id, @household.pets.map { |pet| [pet.name, pet.public_id] }, { include_blank: "No pet", selected: @task.pet&.public_id } %>
+<%= form.label :feeding_amount_g, "Feeding amount (grams, optional)" %><%= form.number_field :feeding_amount_g, min: 0.01, step: 0.01 %>
+<% end %>
+<%= form.submit %><% end %>

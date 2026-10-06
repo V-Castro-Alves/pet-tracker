@@ -8,7 +8,7 @@ module Meals
     end
 
     def call
-      user.pets.with_attached_photo.includes(meal_slots: :meal_reminder_preferences).flat_map do |pet|
+      user.pets.where(household_id: nil).with_attached_photo.includes(meal_slots: :meal_reminder_preferences).flat_map do |pet|
         reminders_for(pet)
       end.sort_by { |reminder| [ reminder.due_at, reminder.pet.name, reminder.meal_slot.id ] }
     end

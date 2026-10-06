@@ -1,3 +1,5 @@
+> Historical pet-module specification. The current household product and integration contracts are documented in [docs/HOUSEHOLD_SPEC.md](docs/HOUSEHOLD_SPEC.md) and [docs/API.md](docs/API.md).
+
 # Pet Tracker — Technical Spec (v0.1)
 
 Companion to `pet-tracker-spec.md` and `pet-tracker-functional-spec.md`. This document covers architecture, data model, API surface, auth, and the notification/scheduling system needed to implement v1.

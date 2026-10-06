@@ -2,6 +2,7 @@ class MealLogsController < ApplicationController
   before_action :set_pet
 
   def index
+    return render_household_feedings if @pet.household
     @meal_logs = @pet.meal_logs.includes(:meal_slot, :logged_by_user).chronological
     @meal_logs = @meal_logs.where(logged_by_user_id: params[:logged_by_user_id]) if params[:logged_by_user_id].present?
     @meal_logs = @meal_logs.where(scheduled_for: Date.parse(params[:from]).beginning_of_day..) if params[:from].present?
@@ -10,6 +11,7 @@ class MealLogsController < ApplicationController
   end
 
   def new
+    return render_household_feedings if @pet.household
     finder = Meals::OccurrenceFinder.new(@pet)
     @occurrence = if params[:meal_slot_id]
       finder.for(slot: @pet.meal_slots.active.find(params[:meal_slot_id]), date: requested_date)
@@ -20,6 +22,11 @@ class MealLogsController < ApplicationController
   end
 
   def create
+    if @pet.household
+      return head :unprocessable_entity unless params[:additional_feeding] == "1"
+      Meals::RecordFeeding.call(pet: @pet, actor: Current.user, amount: params.expect(feeding: [ :amount_g ])[:amount_g])
+      return redirect_to pet_meal_logs_path(@pet), notice: "Additional feeding recorded."
+    end
     @meal_slot = @pet.meal_slots.find(meal_log_params[:meal_slot_id])
     attributes = normalized_attributes
     @meal_log = Meals::LogMeal.new(
@@ -38,6 +45,7 @@ class MealLogsController < ApplicationController
     @source = params[:source]
     render :new, status: :unprocessable_entity
   rescue ActiveRecord::RecordInvalid => error
+    return redirect_to pet_meal_logs_path(@pet), alert: error.record.errors.full_messages.to_sentence if @pet.household
     @meal_log = error.record
     @occurrence = Meals::OccurrenceFinder::Occurrence.new(meal_slot: @meal_slot, scheduled_for: attributes[:scheduled_for])
     @form_values = meal_log_params
@@ -46,6 +54,12 @@ class MealLogsController < ApplicationController
   end
 
   private
+    def render_household_feedings
+      @occurrences = TaskOccurrence.where(task: @pet.tasks.where.not(feeding_amount_g: nil), status: "pending").order(:scheduled_at).limit(30)
+      @feedings = @pet.feeding_entries.includes(:credited_user).order(fed_at: :desc).limit(50)
+      render :household
+    end
+
     def set_pet
       @pet = current_user_pet!
     end

@@ -45,6 +45,7 @@ class MealSlotsController < ApplicationController
 
     def set_pet
       @pet = current_user_pet!
+      redirect_to household_tasks_path(@pet.household) if @pet.household
     end
 
     def set_meal_slot

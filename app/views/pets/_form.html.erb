@@ -1,4 +1,5 @@
 <%= form_with model: pet, data: { controller: "photo-preview" } do |form| %>
+  <%= hidden_field_tag :household_id, (@household&.public_id || params[:household_id]) if @household || params[:household_id].present? %>
   <%= render "shared/form_errors", record: pet %>
 
   <div class="form-grid">

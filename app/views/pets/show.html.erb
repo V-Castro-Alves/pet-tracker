@@ -25,7 +25,11 @@
     </div>
     <%= link_to "Manage schedule", pet_meal_slots_path(@pet) %>
   </div>
-  <% if @pet.meal_slots.active.any? %>
+  <% if @pet.household %>
+    <% @pet.tasks.active.each do |task| %><p><strong><%= task.local_time %></strong> <%= task.title %> · <%= task.feeding_amount_g %> g</p><% end %>
+    <%= link_to "Log now", new_pet_meal_log_path(@pet), class: "button" %>
+    <%= link_to "View history", pet_meal_logs_path(@pet) %>
+  <% elsif @pet.meal_slots.active.any? %>
     <div class="compact-slots">
       <% @pet.meal_slots.active.chronological.each do |slot| %>
         <span><strong><%= slot.scheduled_time.strftime("%H:%M") %></strong> <%= slot.name %> · <%= number_with_precision(slot.default_amount_g, precision: 0, strip_insignificant_zeros: true) %> g</span>

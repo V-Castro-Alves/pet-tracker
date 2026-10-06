@@ -1,4 +1,7 @@
 class Pet < ApplicationRecord
+  belongs_to :household, optional: true
+  has_many :tasks, dependent: :destroy
+  has_many :feeding_entries, dependent: :destroy
   has_secure_token :qr_token, length: 24
   before_validation :assign_public_id, on: :create
 
@@ -14,15 +17,24 @@ class Pet < ApplicationRecord
   has_many :medical_entries, dependent: :destroy
   has_many :notifications, dependent: :destroy
 
+  def users
+    household ? household.users : super
+  end
+
   def active_food_bag
     food_bags.active.first
   end
 
   def administered_by?(user)
-    pet_users.exists?(user: user, is_pet_admin: true)
+    household ? household.administered_by?(user) : pet_users.exists?(user: user, is_pet_admin: true)
   end
 
   def average_daily_consumption_g(since: 30.days.ago)
+    if household
+      entries = feeding_entries.where(fed_at: since..).group_by { |entry| entry.fed_at.in_time_zone(time_zone).to_date }
+      return 0.to_d if entries.empty?
+      return entries.values.sum { |daily| daily.sum(&:amount_g) } / entries.size
+    end
     logs = meal_logs.fed.where(actual_time: since..).group_by { |log| log.actual_time.in_time_zone(time_zone).to_date }
     return 0.to_d if logs.empty?
 

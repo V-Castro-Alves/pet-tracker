@@ -1,31 +1,13 @@
-<% content_for :title, "Today" %>
-<section class="page-header today-header">
-  <div>
-    <p class="eyebrow"><%= @now.in_time_zone(Current.user.time_zone).strftime("%A, %B %-d") %></p>
-    <h1>A little care for today.</h1>
-    <p class="page-intro">Your pets’ meal reminders, together in one place.</p>
-  </div>
-</section>
-
-<% if @pets.any? %>
-  <section class="reminder-section" aria-labelledby="due-heading">
-    <div class="section-title"><h2 id="due-heading">Needs attention</h2><span><%= @due_reminders.size %> pending</span></div>
-    <% if @due_reminders.any? %>
-      <%= render "reminders", reminders: @due_reminders, due: true %>
-    <% else %>
-      <div class="care-clear"><span class="care-check" aria-hidden="true">✓</span><div><h3>You’re all caught up</h3><p>No meal reminders need attention right now.</p></div></div>
-    <% end %>
-  </section>
-  <section class="reminder-section" aria-labelledby="upcoming-heading">
-    <div class="section-title"><h2 id="upcoming-heading">Later today</h2><span><%= @upcoming_reminders.size %> upcoming</span></div>
-    <% if @upcoming_reminders.any? %>
-      <%= render "reminders", reminders: @upcoming_reminders, due: false %>
-    <% else %>
-      <p class="muted">No more meal reminders scheduled for today.</p>
-    <% end %>
-  </section>
-  <p class="reminder-footnote">Times shown in <%= Current.user.time_zone %>. This list follows your personal reminder settings and hides meals already fed or skipped. Pending reminders stay here for up to 24 hours after their reminder time.</p>
-  <%= link_to "View your pets & manage routines", pets_path, class: "button button-secondary" %>
+<% if @households.any? %>
+<h1>Today</h1>
+<%= form_with url: root_path, method: :get do |form| %><%= form.label :household_id, "Household" %><%= form.select :household_id, @households.map { |household| [household.name, household.public_id] }, include_blank: "All households", selected: params[:household_id] %><%= form.label :view, "Responsibilities" %><%= form.select :view, [["Everyone", "everyone"], ["Mine", "mine"]], selected: params[:view] %><%= form.submit "Filter" %><% end %>
+<% @groups.each do |label, occurrences| %><section><h2><%= label %></h2><% if occurrences.empty? %><p>No tasks here.</p><% end %><% occurrences.each do |occurrence| %>
+<article class="card" data-controller="task-action"><h3><%= occurrence.task.title %></h3><p><%= occurrence.task.household.name %> · <%= occurrence.scheduled_at.in_time_zone(Current.user.time_zone).strftime("%b %d, %H:%M") %> · <%= occurrence.assignee&.name || "Anyone" %></p>
+<%= render "tasks/completion_details", occurrence: occurrence %>
+<% %w[completed skipped].each do |status| %><button data-action="task-action#resolve" data-status="<%= status %>" data-url="<%= api_v1_household_occurrence_path(occurrence.task.household, occurrence) %>"><%= status == "completed" ? "Complete" : "Skip" %></button><% end %><p role="status" data-task-action-target="message"></p></article>
+<% end %></section><% end %>
+<h2>Recent activity</h2><% @activity.each do |item| %><p><%= item.task.title %> — <%= item.status %> by <%= item.credited_user&.name %></p><% end %>
 <% else %>
-  <%= render "shared/pet_list", pets: @pets %>
+<section class="card"><h1>Share the everyday work.</h1><h2>Create your first household</h2><p>Bring chores, reminders, and optional pet care together.</p><%= link_to "Create your household", new_household_path, class: "button" %></section>
+<%= render "legacy" if @pets.any? %>
 <% end %>

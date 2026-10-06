@@ -1,0 +1,4 @@
+<details><summary>Completion details</summary>
+<label>Completed by<select data-task-action-target="credited"><% occurrence.task.household.users.each do |member| %><option value="<%= member.public_id %>" <%= "selected" if member == Current.user %>><%= member.name %></option><% end %></select></label>
+<% if occurrence.task.feeding_amount_g %><label>Amount (grams)<input type="number" min="0.01" step="0.01" value="<%= occurrence.task.feeding_amount_g %>" data-task-action-target="amount"></label><% end %>
+</details>
