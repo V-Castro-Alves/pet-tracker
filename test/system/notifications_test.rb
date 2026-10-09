@@ -11,25 +11,6 @@ class NotificationsTest < ApplicationSystemTestCase
     assert_current_path notifications(:unread_food).path
     assert notifications(:unread_food).reload.read?
   end
-  test "caretaker changes their meal reminder" do
-    sign_in_as users(:one)
-    visit edit_pet_meal_slot_reminder_path(pets(:one), meal_slots(:breakfast))
-    select "On meal time", from: "Monday notifications"
-    select "After 30 min not logged", from: "Saturday notifications"
-    select "Custom time", from: "Sunday notifications"
-    set_control "#minutes_0", "45"
-    submit_form "Save my reminders"
-    assert_text "Your reminders were updated."
-    visit edit_pet_meal_slot_reminder_path(pets(:one), meal_slots(:breakfast))
-    assert_select "Monday notifications", selected: "On meal time"
-    assert_select "Saturday notifications", selected: "After 30 min not logged"
-    assert_field "Sunday custom delay (minutes)", with: "45"
-    select "No notifications", from: "Monday notifications"
-    submit_form "Save my reminders"
-    visit edit_pet_meal_slot_reminder_path(pets(:one), meal_slots(:breakfast))
-    assert_select "Monday notifications", selected: "No notifications"
-  end
-
   test "unconfigured push hides both device buttons" do
     original_public = ENV.delete("VAPID_PUBLIC_KEY")
     original_private = ENV.delete("VAPID_PRIVATE_KEY")

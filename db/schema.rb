@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_03_000003) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_09_000000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.integer "blob_id", null: false
     t.datetime "created_at", null: false
@@ -125,58 +125,27 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_000003) do
     t.index ["token"], name: "index_household_invitations_on_token", unique: true
   end
 
+  create_table "household_modules", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "enabled_at", null: false
+    t.integer "enabled_by_id", null: false
+    t.integer "household_id", null: false
+    t.string "key", null: false
+    t.json "settings", default: {}, null: false
+    t.datetime "updated_at", null: false
+    t.index ["enabled_by_id"], name: "index_household_modules_on_enabled_by_id"
+    t.index ["household_id", "key"], name: "index_household_modules_on_household_id_and_key", unique: true
+    t.index ["household_id"], name: "index_household_modules_on_household_id"
+    t.check_constraint "key IN ('pet_care')", name: "household_modules_valid_key"
+  end
+
   create_table "households", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "name", null: false
-    t.boolean "pets_enabled", default: false, null: false
     t.string "public_id", null: false
     t.string "time_zone", null: false
     t.datetime "updated_at", null: false
     t.index ["public_id"], name: "index_households_on_public_id", unique: true
-  end
-
-  create_table "meal_logs", force: :cascade do |t|
-    t.decimal "actual_amount_g", precision: 8, scale: 2
-    t.datetime "actual_time"
-    t.datetime "created_at", null: false
-    t.integer "duplicate_of_id"
-    t.integer "logged_by_user_id", null: false
-    t.integer "meal_slot_id", null: false
-    t.integer "pet_id", null: false
-    t.datetime "scheduled_for", null: false
-    t.string "status", null: false
-    t.datetime "updated_at", null: false
-    t.index ["duplicate_of_id"], name: "index_meal_logs_on_duplicate_of_id"
-    t.index ["logged_by_user_id"], name: "index_meal_logs_on_logged_by_user_id"
-    t.index ["meal_slot_id", "scheduled_for"], name: "index_meal_logs_on_meal_slot_id_and_scheduled_for"
-    t.index ["meal_slot_id"], name: "index_meal_logs_on_meal_slot_id"
-    t.index ["pet_id"], name: "index_meal_logs_on_pet_id"
-  end
-
-  create_table "meal_reminder_preferences", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.integer "delay_minutes", default: 60, null: false
-    t.boolean "enabled", default: true, null: false
-    t.integer "meal_slot_id", null: false
-    t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
-    t.json "weekday_delays", default: {}, null: false
-    t.index ["meal_slot_id", "user_id"], name: "index_meal_reminder_preferences_on_meal_slot_id_and_user_id", unique: true
-    t.index ["meal_slot_id"], name: "index_meal_reminder_preferences_on_meal_slot_id"
-    t.index ["user_id"], name: "index_meal_reminder_preferences_on_user_id"
-    t.check_constraint "delay_minutes >= 0 AND delay_minutes <= 1440", name: "meal_reminder_delay_range"
-  end
-
-  create_table "meal_slots", force: :cascade do |t|
-    t.boolean "active", default: true, null: false
-    t.datetime "created_at", null: false
-    t.decimal "default_amount_g", precision: 8, scale: 2, null: false
-    t.string "name", null: false
-    t.integer "pet_id", null: false
-    t.time "scheduled_time", null: false
-    t.datetime "updated_at", null: false
-    t.index ["pet_id", "scheduled_time"], name: "index_active_meal_slots_on_pet_and_time", unique: true, where: "active = 1"
-    t.index ["pet_id"], name: "index_meal_slots_on_pet_id"
   end
 
   create_table "medical_entries", force: :cascade do |t|
@@ -221,40 +190,25 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_000003) do
     t.index ["user_id"], name: "index_notifications_on_user_id"
   end
 
-  create_table "pet_invites", force: :cascade do |t|
-    t.datetime "accepted_at"
-    t.integer "accepted_by_id"
+  create_table "pet_care_task_details", force: :cascade do |t|
+    t.decimal "amount_g", precision: 8, scale: 2
+    t.string "care_type", null: false
     t.datetime "created_at", null: false
-    t.integer "created_by_id", null: false
-    t.datetime "expires_at", null: false
-    t.string "invite_token", null: false
-    t.string "invited_email"
     t.integer "pet_id", null: false
+    t.json "settings", default: {}, null: false
+    t.integer "task_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["accepted_by_id"], name: "index_pet_invites_on_accepted_by_id"
-    t.index ["created_by_id"], name: "index_pet_invites_on_created_by_id"
-    t.index ["invite_token"], name: "index_pet_invites_on_invite_token", unique: true
-    t.index ["pet_id", "expires_at"], name: "index_pet_invites_on_pet_id_and_expires_at"
-    t.index ["pet_id"], name: "index_pet_invites_on_pet_id"
-  end
-
-  create_table "pet_users", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.boolean "is_pet_admin", default: false, null: false
-    t.datetime "linked_at", null: false
-    t.integer "pet_id", null: false
-    t.datetime "updated_at", null: false
-    t.integer "user_id", null: false
-    t.index ["pet_id", "user_id"], name: "index_pet_users_on_pet_id_and_user_id", unique: true
-    t.index ["pet_id"], name: "index_pet_users_on_pet_id"
-    t.index ["user_id"], name: "index_pet_users_on_user_id"
+    t.index ["pet_id"], name: "index_pet_care_task_details_on_pet_id"
+    t.index ["task_id"], name: "index_pet_care_task_details_on_task_id", unique: true
+    t.check_constraint "amount_g IS NULL OR amount_g > 0", name: "pet_care_task_details_positive_amount"
+    t.check_constraint "care_type IN ('feeding', 'medication', 'walking', 'grooming', 'vaccination', 'custom')", name: "pet_care_task_details_valid_care_type"
   end
 
   create_table "pets", force: :cascade do |t|
     t.date "birthdate"
     t.string "breed"
     t.datetime "created_at", null: false
-    t.integer "household_id"
+    t.integer "household_id", null: false
     t.string "name", null: false
     t.text "notes"
     t.string "public_id", null: false
@@ -340,11 +294,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_000003) do
     t.integer "assignee_id"
     t.string "category"
     t.datetime "created_at", null: false
-    t.decimal "feeding_amount_g", precision: 8, scale: 2
     t.integer "household_id", null: false
+    t.string "kind", default: "standard", null: false
     t.string "local_time", null: false
     t.text "notes"
-    t.integer "pet_id"
     t.string "public_id", null: false
     t.string "recurrence", default: "daily", null: false
     t.date "starts_on", null: false
@@ -354,8 +307,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_000003) do
     t.json "weekdays", default: [], null: false
     t.index ["assignee_id"], name: "index_tasks_on_assignee_id"
     t.index ["household_id"], name: "index_tasks_on_household_id"
-    t.index ["pet_id"], name: "index_tasks_on_pet_id"
     t.index ["public_id"], name: "index_tasks_on_public_id", unique: true
+    t.check_constraint "kind IN ('standard', 'pet_care')", name: "tasks_valid_kind"
     t.check_constraint "recurrence IN ('once', 'daily', 'weekly')", name: "tasks_valid_recurrence"
   end
 
@@ -434,24 +387,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_000003) do
   add_foreign_key "feeding_entries", "users", column: "credited_user_id"
   add_foreign_key "food_bags", "pets"
   add_foreign_key "household_invitations", "households"
-  add_foreign_key "meal_logs", "meal_logs", column: "duplicate_of_id"
-  add_foreign_key "meal_logs", "meal_slots"
-  add_foreign_key "meal_logs", "pets"
-  add_foreign_key "meal_logs", "users", column: "logged_by_user_id"
-  add_foreign_key "meal_reminder_preferences", "meal_slots"
-  add_foreign_key "meal_reminder_preferences", "users"
-  add_foreign_key "meal_slots", "pets"
+  add_foreign_key "household_modules", "households"
+  add_foreign_key "household_modules", "users", column: "enabled_by_id"
   add_foreign_key "medical_entries", "pets"
   add_foreign_key "medical_entries", "users", column: "created_by_id"
   add_foreign_key "memberships", "households"
   add_foreign_key "memberships", "users"
   add_foreign_key "notifications", "pets"
   add_foreign_key "notifications", "users"
-  add_foreign_key "pet_invites", "pets"
-  add_foreign_key "pet_invites", "users", column: "accepted_by_id"
-  add_foreign_key "pet_invites", "users", column: "created_by_id"
-  add_foreign_key "pet_users", "pets"
-  add_foreign_key "pet_users", "users"
+  add_foreign_key "pet_care_task_details", "pets"
+  add_foreign_key "pet_care_task_details", "tasks"
   add_foreign_key "pets", "households"
   add_foreign_key "push_subscriptions", "users"
   add_foreign_key "sessions", "users"
@@ -462,7 +407,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_03_000003) do
   add_foreign_key "task_reminder_preferences", "tasks"
   add_foreign_key "task_reminder_preferences", "users"
   add_foreign_key "tasks", "households"
-  add_foreign_key "tasks", "pets"
   add_foreign_key "tasks", "users", column: "assignee_id"
   add_foreign_key "vaccines", "pets"
   add_foreign_key "webhook_deliveries", "domain_events"

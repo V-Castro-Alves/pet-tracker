@@ -7,6 +7,6 @@ class QrMealLogsController < ApplicationController
       return
     end
 
-    redirect_to new_pet_meal_log_path(pet, source: "qr")
+    redirect_to pet_feeding_entries_path(pet)
   end
 end

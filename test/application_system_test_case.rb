@@ -38,6 +38,6 @@ class ApplicationSystemTestCase < ActionDispatch::SystemTestCase
       set_control "#password", password
       submit_form "Sign in"
 
-      assert_text "Your pets"
+      assert_text "Today"
     end
 end

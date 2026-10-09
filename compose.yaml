@@ -1,5 +1,5 @@
 x-app: &app
-  image: pet-tracker-development
+  image: housemate-development
   build:
     context: .
     dockerfile: Dockerfile.dev

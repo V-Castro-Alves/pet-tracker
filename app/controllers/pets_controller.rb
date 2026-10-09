@@ -3,7 +3,7 @@ class PetsController < ApplicationController
   before_action :require_pet_admin, only: :destroy
 
   def index
-    @pets = Current.user.pets.with_attached_photo.order(:name)
+    redirect_to households_path, notice: "Choose a household to manage Pet Care."
   end
 
   def show
@@ -11,7 +11,7 @@ class PetsController < ApplicationController
 
   def new
     @household = Current.user.households.find_by!(public_id: params[:household_id]) if params[:household_id].present?
-    @household ||= Current.user.households.where(pets_enabled: true).first
+    @household ||= Current.user.households.joins(:household_modules).find_by(household_modules: { key: "pet_care" })
     if Current.user.households.exists? && !@household
       return redirect_to households_path, alert: "Enable pet care in a household first."
     end
@@ -23,16 +23,15 @@ class PetsController < ApplicationController
 
     if params[:household_id].present? || Current.user.households.exists?
       @pet.household = Current.user.households.find_by!(public_id: params[:household_id])
-      return head :forbidden unless @pet.household.pets_enabled?
+      return head :forbidden unless @pet.household.pet_care_enabled?
       @pet.time_zone = @pet.household.time_zone
     end
 
     Pet.transaction do
       @pet.save!
-      @pet.pet_users.create!(user: Current.user, is_pet_admin: true, linked_at: Time.current) unless @pet.household
     end
 
-    redirect_to(@pet.household ? new_household_task_path(@pet.household) : pet_meal_slots_path(@pet), notice: "#{@pet.name} was added. Now set up a feeding schedule.")
+    redirect_to(@pet.household, notice: "#{@pet.name} was added to Pet Care.")
   rescue ActiveRecord::RecordInvalid
     render :new, status: :unprocessable_entity
   end
@@ -55,7 +54,7 @@ class PetsController < ApplicationController
     end
 
     @pet.destroy!
-    redirect_to pets_path, status: :see_other, notice: "#{@pet.name} was deleted."
+    redirect_to household_path(@pet.household), status: :see_other, notice: "#{@pet.name} was deleted."
   end
 
   private
@@ -64,7 +63,7 @@ class PetsController < ApplicationController
     end
 
     def require_pet_admin
-      return if @pet.administered_by?(Current.user)
+      return if @pet.household.administered_by?(Current.user)
 
       redirect_to @pet, alert: "Only a pet administrator can do that."
     end

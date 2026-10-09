@@ -122,6 +122,12 @@ textarea { resize: vertical; }
 .danger-link { color: var(--danger); }
 .page-action { margin-top: 1.5rem; }
 .dashboard-section { padding: 1.5rem; border: 1px solid var(--border); border-radius: 1.15rem; background: var(--surface); box-shadow: 0 0.35rem 1.25rem rgb(31 54 43 / 4%); }
+.household-navigation { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; }
+.household-navigation a { padding: 0.65rem 0.9rem; border-radius: 0.7rem; background: var(--primary-soft); font-weight: 700; text-decoration: none; }
+.module-card { display: flex; align-items: center; gap: 1rem; margin: 1rem 0 1.5rem; padding: 1.25rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--canvas); }
+.module-card > div:first-child { flex: 1; }
+.module-card h3 { margin: 0 0 0.35rem; }
+.module-card p { margin: 0; }
 .schedule-panel { border-color: #cce3d4; }
 .photo-picker { display: flex; align-items: center; gap: 1.25rem; margin: 1rem 0; padding: 1rem; border: 1px dashed #adc8b6; border-radius: 1rem; background: #f7fbf8; }
 .photo-preview { display: grid; width: 6.5rem; height: 6.5rem; flex: 0 0 auto; overflow: hidden; place-items: center; border-radius: 1rem; background: var(--primary-soft); font-size: 2rem; }

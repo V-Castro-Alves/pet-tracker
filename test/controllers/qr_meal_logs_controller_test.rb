@@ -13,7 +13,7 @@ class QrMealLogsControllerTest < ActionDispatch::IntegrationTest
     sign_in_as users(:one)
     get qr_meal_log_url(qr_token: pets(:one).qr_token)
 
-    assert_redirected_to new_pet_meal_log_url(pets(:one), source: "qr")
+    assert_redirected_to pet_feeding_entries_url(pets(:one))
   end
 
   test "unlinked users receive a forbidden response" do

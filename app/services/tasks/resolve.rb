@@ -9,13 +9,14 @@ module Tasks
         raise ArgumentError, "Choose completed or skipped" unless status.in?(%w[completed skipped])
         claimed = TaskOccurrence.where(id: occurrence.id, status: "pending").update_all(status: status)
         raise Conflict, "This occurrence has already been resolved" unless claimed == 1
-        amount = amount.presence || task.feeding_amount_g
-        if status == "completed" && task.pet && task.feeding_amount_g
+        detail = task.pet_care_task_detail
+        amount = amount.presence || detail&.amount_g
+        if status == "completed" && detail&.care_type == "feeding"
           raise ArgumentError, "Feeding amount must be positive" unless amount && BigDecimal(amount.to_s) > 0
-          Meals::RecordFeeding.call(pet: task.pet, actor: actor, credited_user: credited_user, amount: amount, occurrence: occurrence)
+          Meals::RecordFeeding.call(pet: detail.pet, actor: actor, credited_user: credited_user, amount: amount, occurrence: occurrence)
         end
         occurrence.update!(status: status, actor: actor, credited_user: credited_user, resolved_at: Time.current,
-          actual_amount_g: status == "completed" && task.pet ? amount : nil)
+          actual_amount_g: status == "completed" && detail&.care_type == "feeding" ? amount : nil)
         DomainEvent.publish!(household: task.household, kind: "occurrence.#{status}", resource: occurrence, key: "resolved:#{occurrence.public_id}")
         occurrence
       end

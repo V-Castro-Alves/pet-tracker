@@ -1,8 +1,9 @@
 require "test_helper"
 class HouseholdsControllerTest < ActionDispatch::IntegrationTest
   setup do
-    @household = Household.create!(name: "Home", time_zone: "UTC", pets_enabled: true)
+    @household = Household.create!(name: "Home", time_zone: "UTC")
     @household.memberships.create!(user: users(:one), admin: true)
+    @household.household_modules.create!(key: "pet_care", enabled_by: users(:one), enabled_at: Time.current)
   end
   test "registration returns to a household invitation" do
     invitation = @household.household_invitations.create!(email: "new@example.com")

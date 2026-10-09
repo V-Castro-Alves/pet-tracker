@@ -3,22 +3,20 @@ require "test_helper"
 class PetsControllerTest < ActionDispatch::IntegrationTest
   setup { sign_in_as users(:one) }
 
-  test "lists only the current user's pets" do
+  test "the former global pet directory redirects to households" do
     get pets_url
-    assert_response :success
-    assert_select "h2", text: "Pepper"
-    assert_select "h2", text: "Luna", count: 0
+    assert_redirected_to households_url
   end
 
-  test "creates a pet and administrator membership together" do
-    assert_difference [ "Pet.count", "PetUser.count" ], 1 do
-      post pets_url, params: { pet: { name: "Milo", species: "Cat", time_zone: "Brasilia" } }
+  test "creates a pet inside an enabled household" do
+    assert_difference "Pet.count", 1 do
+      post pets_url, params: { household_id: households(:one).public_id, pet: { name: "Milo", species: "Cat" } }
     end
 
     pet = Pet.order(:created_at).last
-    assert_redirected_to pet_meal_slots_url(pet)
-    assert pet.pet_users.exists?(user: users(:one), is_pet_admin: true)
-    assert_equal users(:one).time_zone, pet.time_zone
+    assert_redirected_to household_url(households(:one))
+    assert_equal households(:one), pet.household
+    assert_equal households(:one).time_zone, pet.time_zone
     assert_match(/\A[0-9a-f-]{36}\z/, pet.public_id)
   end
 
@@ -46,6 +44,6 @@ class PetsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "Pet.count", -1 do
       delete pet_url(pets(:one)), params: { confirmation: "Pepper" }
     end
-    assert_redirected_to pets_url
+    assert_redirected_to household_url(households(:one))
   end
 end

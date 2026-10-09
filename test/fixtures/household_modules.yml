@@ -1,0 +1,13 @@
+one_pet_care:
+  household: one
+  enabled_by: one
+  key: pet_care
+  enabled_at: <%= 1.day.ago %>
+  settings: {}
+
+two_pet_care:
+  household: two
+  enabled_by: two
+  key: pet_care
+  enabled_at: <%= 1.day.ago %>
+  settings: {}

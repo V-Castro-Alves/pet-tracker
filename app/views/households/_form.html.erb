@@ -2,6 +2,5 @@
   <p role="alert"><%= household.errors.full_messages.to_sentence %></p>
   <%= form.label :name %><%= form.text_field :name, required: true %>
   <%= form.label :time_zone %><%= form.time_zone_select :time_zone %>
-  <label><%= form.check_box :pets_enabled %> Enable pet care</label>
   <%= form.submit %>
 <% end %>

@@ -9,5 +9,4 @@
 <h2>Recent activity</h2><% @activity.each do |item| %><p><%= item.task.title %> — <%= item.status %> by <%= item.credited_user&.name %></p><% end %>
 <% else %>
 <section class="card"><h1>Share the everyday work.</h1><h2>Create your first household</h2><p>Bring chores, reminders, and optional pet care together.</p><%= link_to "Create your household", new_household_path, class: "button" %></section>
-<%= render "legacy" if @pets.any? %>
 <% end %>

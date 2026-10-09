@@ -1,24 +1,20 @@
 class Pet < ApplicationRecord
-  belongs_to :household, optional: true
-  has_many :tasks, dependent: :destroy
+  belongs_to :household
+  has_many :pet_care_task_details, dependent: :restrict_with_error
+  has_many :tasks, through: :pet_care_task_details
   has_many :feeding_entries, dependent: :destroy
   has_secure_token :qr_token, length: 24
   before_validation :assign_public_id, on: :create
 
   has_one_attached :photo
-  has_many :pet_users, dependent: :destroy
-  has_many :users, through: :pet_users
-  has_many :meal_slots, dependent: :destroy
-  has_many :meal_logs, dependent: :destroy
   has_many :food_bags, dependent: :destroy
-  has_many :pet_invites, dependent: :destroy
   has_many :weight_logs, dependent: :destroy
   has_many :vaccines, dependent: :destroy
   has_many :medical_entries, dependent: :destroy
   has_many :notifications, dependent: :destroy
 
   def users
-    household ? household.users : super
+    household.users
   end
 
   def active_food_bag
@@ -26,19 +22,14 @@ class Pet < ApplicationRecord
   end
 
   def administered_by?(user)
-    household ? household.administered_by?(user) : pet_users.exists?(user: user, is_pet_admin: true)
+    household.administered_by?(user)
   end
 
   def average_daily_consumption_g(since: 30.days.ago)
-    if household
-      entries = feeding_entries.where(fed_at: since..).group_by { |entry| entry.fed_at.in_time_zone(time_zone).to_date }
-      return 0.to_d if entries.empty?
-      return entries.values.sum { |daily| daily.sum(&:amount_g) } / entries.size
-    end
-    logs = meal_logs.fed.where(actual_time: since..).group_by { |log| log.actual_time.in_time_zone(time_zone).to_date }
-    return 0.to_d if logs.empty?
+    entries = feeding_entries.where(fed_at: since..).group_by { |entry| entry.fed_at.in_time_zone(time_zone).to_date }
+    return 0.to_d if entries.empty?
 
-    logs.values.sum { |daily_logs| daily_logs.sum(&:actual_amount_g) } / logs.size
+    entries.values.sum { |daily| daily.sum(&:amount_g) } / entries.size
   end
 
   validates :name, :species, :public_id, presence: true

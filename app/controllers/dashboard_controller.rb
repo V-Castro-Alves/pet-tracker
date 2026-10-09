@@ -9,8 +9,5 @@ class DashboardController < ApplicationController
     pending = scope.where(status: "pending")
     @groups = { "Overdue" => pending.where("scheduled_at < ?", today), "Today" => pending.where(scheduled_at: today...today + 1.day), "Upcoming" => pending.where("scheduled_at >= ?", today + 1.day).limit(100) }
     @activity = scope.where.not(status: "pending").reorder(resolved_at: :desc).limit(20)
-    @pets = Current.user.pets.with_attached_photo.order(:name)
-    @now = Time.current
-    @due_reminders, @upcoming_reminders = Meals::DashboardReminders.new(Current.user, now: @now).call.partition { |reminder| reminder.due_at <= @now }
   end
 end

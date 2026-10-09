@@ -9,7 +9,7 @@ class QrMealLogsTest < ApplicationSystemTestCase
     assert_operator rendered_width, :>=, 400
   end
 
-  test "guest signs in from a QR code and reaches the pet's meal form" do
+  test "guest signs in from a QR code and reaches feeding history" do
     pet = pets(:one)
     user = users(:one)
 
@@ -20,8 +20,7 @@ class QrMealLogsTest < ApplicationSystemTestCase
     set_control "#password", "password"
     submit_form "Sign in"
 
-    assert_text pet.name.upcase
-    assert_text(/Log (Breakfast|Dinner)/)
-    assert_field "meal_log_actual_amount_g"
+    assert_text "#{pet.name}'s feedings"
+    assert_field "Amount (grams)"
   end
 end

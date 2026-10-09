@@ -10,8 +10,9 @@ The README and specification files describe both implemented and planned feature
 
 ## Household pivot conventions
 
-- `docs/HOUSEHOLD_SPEC.md` is the current product specification; the root pet specifications describe historical behavior. `/openapi.json` is the public API contract; keep it and `docs/API.md` aligned with controller responses.
+- `docs/HOUSEHOLD_SPEC.md` is the current product specification; `docs/PET_CARE.md` defines the first-party Pet Care module. `/openapi.json` is the public API contract; keep it and `docs/API.md` aligned with controller responses.
 - Household access is scoped through `Current.user.households` (or the authenticated API actor). Household pets inherit membership; legacy pet memberships must never grant access to a household pet.
+- Pet Care is a first-party household module represented by `HouseholdModule`; do not restore global pet navigation, standalone pet membership, or a second scheduling engine. Module-specific task data belongs in `PetCareTaskDetail`, not the core task table.
 - Task HTML and API controllers share `Tasks` services. Browser task actions use session/CSRF authentication against `/api/v1`; personal tokens are only for external clients.
 - Persist occurrence IDs and preserve them for assignment/title changes. Schedule edits replace future pending occurrences only. Feeding completion and inventory deduction share a transaction through `Meals::RecordFeeding`.
 - API mutations require per-user idempotency keys. Recheck current household access before replaying a stored response. Tokens cannot exceed current membership or their household/scopes.
@@ -45,6 +46,7 @@ The README and specification files describe both implemented and planned feature
 
 ## Database changes
 
+- The pre-production database history was squashed into `20261009000000_create_housemate_baseline.rb`. Add new migrations after that baseline; do not restore the removed Pet Tracker migration chain.
 - Create schema changes with Rails migrations and commit both the migration and updated `db/schema.rb`.
 - Preserve foreign keys, indexes, and database-level null constraints where appropriate.
 - The application uses SQLite in development and test. Do not run multiple test commands concurrently against `storage/test.sqlite3`; doing so can produce `SQLite3::BusyException` errors.

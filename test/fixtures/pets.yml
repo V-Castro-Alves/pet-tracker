@@ -1,4 +1,5 @@
 one:
+  household: one
   name: Pepper
   species: Dog
   breed: Mutt
@@ -7,6 +8,7 @@ one:
   time_zone: UTC
 
 two:
+  household: two
   name: Luna
   species: Cat
   qr_token: luna-token

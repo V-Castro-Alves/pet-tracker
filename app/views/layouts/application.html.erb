@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title><%= content_for(:title) || "Household" %></title>
+    <title><%= content_for(:title) || "HouseMate" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Household">
+    <meta name="application-name" content="HouseMate">
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
@@ -27,8 +27,8 @@
     <a href="#main-content" class="skip-link">Skip to content</a>
     <header class="site-header">
       <%= link_to root_path, class: "brand" do %>
-        <span aria-hidden="true"><%= render "shared/paw" %></span>
-        <span>Household</span>
+        <span aria-hidden="true">✓</span>
+        <span>HouseMate</span>
       <% end %>
 
       <% if authenticated? %>
@@ -39,10 +39,7 @@
           <%= link_to root_path, aria: { current: ("page" if controller_name == "dashboard") } do %>
             <span aria-hidden="true">⌂</span> Today
           <% end %>
-          <%= link_to households_path do %><span aria-hidden="true">⌂</span> Households<% end %>
-          <%= link_to pets_path, aria: { current: ("page" if controller_name == "pets") } do %>
-            <%= render "shared/paw" %> Your pets
-          <% end %>
+          <%= link_to households_path, aria: { current: ("page" if controller_name.in?(%w[households household_modules tasks])) } do %><span aria-hidden="true">⌂</span> Household<% end %>
           <%= link_to notifications_path, class: "notification-link", aria: { current: ("page" if controller_name == "notifications") } do %>
             <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg> Notifications
             <%= render "notifications/badge", user: Current.user %>

@@ -1,0 +1,9 @@
+one:
+  household: one
+  user: one
+  admin: true
+
+two:
+  household: two
+  user: two
+  admin: true

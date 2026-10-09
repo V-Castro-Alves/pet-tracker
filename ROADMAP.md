@@ -1,8 +1,14 @@
 # Household responsibilities roadmap
 
-The current product and API contracts are in `docs/HOUSEHOLD_SPEC.md`, `docs/API.md`, and `public/openapi.json`. Milestone status here is authoritative.
+The current product and API contracts are in `docs/HOUSEHOLD_SPEC.md`, `docs/PET_CARE.md`, `docs/API.md`, and `public/openapi.json`. Milestone status here is authoritative.
 
 ## Pivot milestones
+
+- [ ] HouseMate household-first reset — **in progress**
+  - [x] Rename the product to HouseMate and make collaborative household tasks the primary experience.
+  - [x] Replace the global pet area and `pets_enabled` flag with a household-scoped, first-party Pet Care module.
+  - [x] Remove the standalone Pet Tracker compatibility layer, rebuild a single clean database baseline, and household-scope all retained pet data.
+  - [ ] Refresh navigation, household settings, task creation, responsive UI, API documentation, and verification around the new model.
 
 - [x] Household foundation
   - Household membership, administrators, seven-day single-use invitations, registration return flow, transactional removal and successor promotion, optional pet module, and onboarding.
@@ -29,7 +35,7 @@ The current product and API contracts are in `docs/HOUSEHOLD_SPEC.md`, `docs/API
 
 ## Compatibility boundary
 
-No existing-data migration was required or performed. Old pet-only routes/records remain available for repository fixtures and existing development data. Household feeding uses only the new occurrence engine; the legacy meal reminder job excludes household pets. New household pets inherit household membership and do not create legacy pet memberships.
+The original pet-only compatibility boundary is being retired by the HouseMate household-first reset. The application has no production data, so legacy standalone pet records and migrations will be removed rather than migrated.
 
 Webhook destinations currently require public IPv4 HTTPS on port 443. OAuth/voice adapters, hosted plugins, automatic rotation, custom fields, monthly recurrence, and offline writes remain deferred.
 
@@ -37,7 +43,7 @@ Webhook destinations currently require public IPv4 HTTPS on port 443. OAuth/voic
 
 # Pet Tracker implementation roadmap
 
-This file is the durable source of implementation milestone status. Product behavior and acceptance details remain in the product, functional, and technical specification files.
+This file is the durable source of implementation milestone status. Current Pet Care behavior and invariants are consolidated in `docs/PET_CARE.md`; the milestones below preserve the history of the former standalone product.
 
 ## Milestones
 

@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Household Responsibilities API",
+    "title": "HouseMate API",
     "version": "1.0.0",
     "description": "Task schedules are embedded in tasks. IDs are opaque. Collection page size is 50. Mutation idempotency keys are scoped to the user; retries must use the same credential, path and exact body. No cross-origin browser API access is enabled."
   },
@@ -517,7 +517,7 @@
                         "type": "string",
                         "description": "Rails time-zone name, e.g. UTC or Eastern Time (US & Canada)."
                       },
-                      "feeding_amount_g": {
+                      "amount_g": {
                         "type": [
                           "string",
                           "number",
@@ -715,7 +715,7 @@
                         "type": "string",
                         "description": "Rails time-zone name, e.g. UTC or Eastern Time (US & Canada)."
                       },
-                      "feeding_amount_g": {
+                      "amount_g": {
                         "type": [
                           "string",
                           "number",
@@ -1115,7 +1115,7 @@
                         "type": "string",
                         "description": "Rails time-zone name, e.g. UTC or Eastern Time (US & Canada)."
                       },
-                      "feeding_amount_g": {
+                      "amount_g": {
                         "type": [
                           "string",
                           "number",
@@ -2089,8 +2089,12 @@
           "time_zone": {
             "type": "string"
           },
-          "pets_enabled": {
-            "type": "boolean"
+          "modules": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["pet_care"]
+            }
           }
         }
       },
@@ -2166,7 +2170,7 @@
             "type": "string",
             "description": "Rails time-zone name, e.g. UTC or Eastern Time (US & Canada)."
           },
-          "feeding_amount_g": {
+          "amount_g": {
             "type": [
               "string",
               "number",

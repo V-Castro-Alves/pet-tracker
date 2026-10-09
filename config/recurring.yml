@@ -14,10 +14,6 @@ development: &scheduled_notifications
     class: HouseholdSchedulerJob
     queue: background
     schedule: every minute
-  unresolved_meal_notifications:
-    class: MealNotificationJob
-    queue: background
-    schedule: every minute
   vaccine_due_notifications:
     class: VaccineNotificationJob
     queue: background

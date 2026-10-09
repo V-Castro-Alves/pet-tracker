@@ -6,7 +6,7 @@ class HouseholdsController < ApplicationController
     @household = Household.new(time_zone: Current.user.time_zone)
   end
   def create
-    @household = Household.new(params.expect(household: %i[name time_zone pets_enabled]))
+    @household = Household.new(params.expect(household: %i[name time_zone]))
     Household.transaction do
       @household.save!
       @household.memberships.create!(user: Current.user, admin: true)
@@ -21,7 +21,7 @@ class HouseholdsController < ApplicationController
   def update
     @household = Current.user.households.find_by!(public_id: params[:id])
     return head :forbidden unless @household.administered_by?(Current.user)
-    @household.update!(params.expect(household: %i[name time_zone pets_enabled]))
+    @household.update!(params.expect(household: %i[name time_zone]))
     redirect_to @household
   rescue ActiveRecord::RecordInvalid
     render :show, status: :unprocessable_entity

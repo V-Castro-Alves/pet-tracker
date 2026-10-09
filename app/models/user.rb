@@ -3,20 +3,15 @@ class User < ApplicationRecord
   has_many :memberships, dependent: :destroy
   has_many :households, through: :memberships
   has_many :api_tokens, dependent: :destroy
+  has_many :enabled_household_modules, class_name: "HouseholdModule", foreign_key: :enabled_by_id, dependent: :restrict_with_error, inverse_of: :enabled_by
   has_secure_password
-  has_many :meal_reminder_preferences, dependent: :destroy
   has_many :sessions, dependent: :destroy
-  has_many :pet_users, dependent: :destroy
-  has_many :pets, through: :pet_users
-  has_many :meal_logs, foreign_key: :logged_by_user_id, dependent: :restrict_with_error, inverse_of: :logged_by_user
-  has_many :created_pet_invites, class_name: "PetInvite", foreign_key: :created_by_id, dependent: :restrict_with_error, inverse_of: :created_by
-  has_many :accepted_pet_invites, class_name: "PetInvite", foreign_key: :accepted_by_id, dependent: :nullify, inverse_of: :accepted_by
   has_many :medical_entries, foreign_key: :created_by_id, dependent: :restrict_with_error, inverse_of: :created_by
   has_many :notifications, dependent: :destroy
   has_many :push_subscriptions, dependent: :destroy
 
   def pets
-    Pet.where(household_id: households.where(pets_enabled: true).select(:id)).or(Pet.where(household_id: nil, id: pet_users.select(:pet_id)))
+    Pet.where(household_id: households.joins(:household_modules).where(household_modules: { key: "pet_care" }).select(:id))
   end
 
   normalizes :email_address, with: ->(email) { email.strip.downcase }

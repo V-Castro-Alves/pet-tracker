@@ -2,8 +2,9 @@ require "test_helper"
 class TasksTest < ActiveSupport::TestCase
   setup do
     @user = users(:one)
-    @household = Household.create!(name: "Our home", time_zone: "UTC", pets_enabled: true)
+    @household = Household.create!(name: "Our home", time_zone: "UTC")
     @household.memberships.create!(user: @user, admin: true)
+    @household.household_modules.create!(key: "pet_care", enabled_by: @user, enabled_at: Time.current)
   end
   def build_task(**attributes)
     Tasks::Save.call(task: @household.tasks.new, attributes: { title: "Dishes", time_zone: "UTC", recurrence: "daily", starts_on: Date.new(2026, 10, 3), local_time: "09:00" }.merge(attributes))

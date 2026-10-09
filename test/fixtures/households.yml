@@ -1,0 +1,9 @@
+one:
+  public_id: household-one
+  name: Alex's home
+  time_zone: UTC
+
+two:
+  public_id: household-two
+  name: Sam's home
+  time_zone: UTC

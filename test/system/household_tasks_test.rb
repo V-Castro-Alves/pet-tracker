@@ -2,8 +2,9 @@ require "application_system_test_case"
 class HouseholdTasksTest < ApplicationSystemTestCase
   setup do
     ActionController::Base.allow_forgery_protection = true
-    @household = Household.create!(name: "Our household", time_zone: "UTC", pets_enabled: true)
+    @household = Household.create!(name: "Our household", time_zone: "UTC")
     @household.memberships.create!(user: users(:one), admin: true)
+    @household.household_modules.create!(key: "pet_care", enabled_by: users(:one), enabled_at: Time.current)
     @household.memberships.create!(user: users(:two))
     @task = Tasks::Save.call(task: @household.tasks.new, attributes: { title: "Wash the dishes", recurrence: "once", starts_on: Date.current, local_time: "09:00", time_zone: "UTC", assignee: users(:two) })
   end
@@ -53,17 +54,17 @@ class HouseholdTasksTest < ApplicationSystemTestCase
     visit household_integrations_path(@household)
     assert_no_text "Copy this token now"
   end
-  test "pet creation retains household and feeding page" do
+  test "pet creation retains household and feeding history" do
     sign_in_as users(:one)
     visit new_pet_path(household_id: @household.public_id)
     set_control "#pet_name", "Buddy"
     set_control "#pet_species", "Dog"
     submit_form "Create Pet"
-    assert_text "New task"
+    assert_text "Buddy was added to Pet Care."
     visit household_path(@household)
     click_link "Buddy"
-    click_link "Log now"
-    assert_text "Buddy feeding"
+    click_link "Feeding history"
+    assert_text "Buddy's feedings"
   end
   test "household screens fit mobile and desktop viewports" do
     sign_in_as users(:one)

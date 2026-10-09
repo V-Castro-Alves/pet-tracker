@@ -1,5 +1,5 @@
 self.addEventListener("push", (event) => {
-  const payload = event.data ? event.data.json() : { title: "Household", options: {} }
+  const payload = event.data ? event.data.json() : { title: "HouseMate", options: {} }
   event.waitUntil(self.registration.showNotification(payload.title, payload.options))
 })
 

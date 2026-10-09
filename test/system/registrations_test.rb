@@ -11,7 +11,7 @@ class RegistrationsTest < ApplicationSystemTestCase
     assert_no_field "Time zone"
 
     submit_form "Create account"
-    assert_text "Welcome to Household!"
+    assert_text "Welcome to HouseMate!"
 
     assert_text "Create your first household"
     assert_button "Sign out"

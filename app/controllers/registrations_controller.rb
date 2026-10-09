@@ -10,7 +10,7 @@ class RegistrationsController < ApplicationController
 
     if @user.save
       start_new_session_for(@user)
-      redirect_to after_registration_url, notice: "Welcome to Household!"
+      redirect_to after_registration_url, notice: "Welcome to HouseMate!"
     else
       render :new, status: :unprocessable_entity
     end

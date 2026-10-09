@@ -1,9 +1,9 @@
 require "application_system_test_case"
 
 class PetsTest < ApplicationSystemTestCase
-  test "user adds a pet and its first scheduled meal" do
+  test "user adds a pet to an enabled household and creates a care task" do
     sign_in_as users(:one)
-    visit new_pet_path
+    visit new_pet_path(household_id: households(:one).public_id)
 
     set_control "#pet_name", "Milo"
     set_control "#pet_species", "Cat"
@@ -16,20 +16,15 @@ class PetsTest < ApplicationSystemTestCase
     assert_selector ".photo-preview img", visible: true
 
     submit_form "Create Pet"
-    assert_text "Milo was added. Now set up a feeding schedule."
+    assert_text "Milo was added to Pet Care."
 
-    visit new_pet_meal_slot_path(Pet.find_by!(name: "Milo"))
-    set_control "#meal_slot_name", "Supper"
-    set_control "#meal_slot_scheduled_time", "19:30"
-    set_control "#meal_slot_default_amount_g", "85"
-
-    assert_field "meal_slot_scheduled_time", with: "19:30"
-    assert_field "meal_slot_default_amount_g", with: "85"
-
-    submit_form "Create Meal slot"
-    assert_text "Supper was added."
-
-    assert_text "19:30"
-    assert_text "85 g default serving"
+    visit new_household_task_path(households(:one))
+    set_control "#task_title", "Milo's supper"
+    select "Pet care", from: "Task type"
+    select "Milo", from: "Pet"
+    select "Feeding", from: "Care type"
+    set_control "#task_amount_g", "85"
+    submit_form "Create Task"
+    assert_text "Milo's supper"
   end
 end

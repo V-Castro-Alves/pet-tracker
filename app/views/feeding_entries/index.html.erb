@@ -1,0 +1,11 @@
+<% content_for :title, "#{@pet.name}'s feedings" %>
+<header class="page-header"><div><p class="eyebrow">Pet Care · <%= @pet.household.name %></p><h1><%= @pet.name %>'s feedings</h1><p class="page-intro">Complete scheduled feedings or record an extra meal.</p></div><%= link_to "Back to #{@pet.name}", @pet, class: "button button-secondary" %></header>
+
+<section class="dashboard-section"><h2>Scheduled</h2>
+  <% if @occurrences.empty? %><p class="muted">No pending feeding tasks.</p><% end %>
+  <% @occurrences.each do |occurrence| %><article class="card" data-controller="task-action"><h3><%= occurrence.task.title %></h3><p><%= occurrence.scheduled_at.in_time_zone(Current.user.time_zone).strftime("%b %d, %H:%M") %></p><%= render "tasks/completion_details", occurrence: occurrence %><button data-action="task-action#resolve" data-status="completed" data-url="<%= api_v1_household_occurrence_path(@pet.household, occurrence) %>">Record feeding</button><button data-action="task-action#resolve" data-status="skipped" data-url="<%= api_v1_household_occurrence_path(@pet.household, occurrence) %>">Skip</button><p role="status" data-task-action-target="message"></p></article><% end %>
+</section>
+
+<section class="dashboard-section page-action"><h2>Additional feeding</h2><%= form_with url: pet_feeding_entries_path(@pet), scope: :feeding_entry, class: "household-form" do |form| %><%= form.label :amount_g, "Amount (grams)" %><%= form.number_field :amount_g, min: 0.01, step: 0.01, required: true %><%= form.submit "Record feeding", class: "button button-primary button-fit" %><% end %></section>
+
+<section class="dashboard-section page-action"><h2>Recent history</h2><% if @feedings.empty? %><p class="muted">No feedings recorded yet.</p><% end %><% @feedings.each do |feeding| %><p><strong><%= number_with_precision(feeding.amount_g, precision: 0, strip_insignificant_zeros: true) %> g</strong> · <%= feeding.fed_at.in_time_zone(Current.user.time_zone).strftime("%b %d, %H:%M") %> · <%= feeding.credited_user.name %></p><% end %></section>

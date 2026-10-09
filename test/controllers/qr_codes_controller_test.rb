@@ -35,7 +35,7 @@ class QrCodesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "linked non-administrator cannot regenerate the QR token" do
-    PetUser.create!(pet: pets(:one), user: users(:two), linked_at: Time.current, is_pet_admin: false)
+    households(:one).memberships.create!(user: users(:two), admin: false)
     old_token = pets(:one).qr_token
     sign_out
     sign_in_as users(:two)

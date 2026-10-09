@@ -3,11 +3,18 @@ module Tasks
     def self.call(task:, attributes:)
       Task.transaction do
         creating = task.new_record?
+        detail_attributes = attributes.delete("pet_care_detail") || attributes.delete(:pet_care_detail)
         task.assign_attributes(attributes)
-        task.time_zone = task.pet.time_zone if task.pet
+        task.time_zone = detail_attributes[:pet].time_zone if task.kind == "pet_care" && detail_attributes&.dig(:pet)
         schedule_changed = (task.changed & %w[recurrence starts_on local_time weekdays time_zone]).any?
         assignment_changed = task.assignee_id_changed?
         task.save!
+        if task.kind == "pet_care"
+          detail = task.pet_care_task_detail || task.build_pet_care_task_detail
+          detail.update!(detail_attributes || {})
+        else
+          task.pet_care_task_detail&.destroy!
+        end
         if schedule_changed && !creating
           task.task_occurrences.where(status: "pending").where("scheduled_at > ?", Time.current).destroy_all
         end

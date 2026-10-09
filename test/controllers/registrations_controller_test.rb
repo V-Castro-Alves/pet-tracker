@@ -33,22 +33,6 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_response :unprocessable_entity
   end
 
-  test "returns a new account to the protected destination" do
-    get invitation_url(pet_invites(:shareable).invite_token)
-
-    post registration_url, params: {
-      user: {
-        name: "Guest",
-        email_address: "guest@example.com",
-        browser_time_zone: "America/Sao_Paulo",
-        password: "secret-password",
-        password_confirmation: "secret-password"
-      }
-    }
-
-    assert_redirected_to invitation_url(pet_invites(:shareable).invite_token)
-  end
-
   test "ignores a stale non-invitation destination after registration" do
     get pet_url(pets(:one))
     assert_redirected_to new_session_url

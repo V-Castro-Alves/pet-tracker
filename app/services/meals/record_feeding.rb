@@ -2,7 +2,7 @@ module Meals
   class RecordFeeding
     def self.call(pet:, actor:, amount:, credited_user: actor, occurrence: nil)
       pet.with_lock do
-        raise ActiveRecord::RecordNotFound unless pet.users.exists?(id: actor.id) && pet.users.exists?(id: credited_user.id)
+        raise ActiveRecord::RecordNotFound unless pet.household.users.exists?(id: actor.id) && pet.household.users.exists?(id: credited_user.id)
         entry = pet.feeding_entries.create!(actor: actor, credited_user: credited_user, amount_g: amount, fed_at: Time.current, task_occurrence: occurrence)
         bag = pet.active_food_bag
         if bag

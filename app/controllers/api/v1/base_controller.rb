@@ -59,9 +59,10 @@ module Api
         def serialize(record)
           case record
           when Household
-            { id: record.public_id, name: record.name, time_zone: record.time_zone, pets_enabled: record.pets_enabled }
+            { id: record.public_id, name: record.name, time_zone: record.time_zone, modules: record.household_modules.pluck(:key) }
           when Task
-            record.attributes.slice("title", "notes", "category", "recurrence", "starts_on", "local_time", "weekdays", "time_zone", "feeding_amount_g", "archived_at").merge(id: record.public_id, assignee_id: record.assignee&.public_id, pet_id: record.pet&.public_id)
+            detail = record.pet_care_task_detail
+            record.attributes.slice("title", "notes", "category", "kind", "recurrence", "starts_on", "local_time", "weekdays", "time_zone", "archived_at").merge(id: record.public_id, assignee_id: record.assignee&.public_id, pet_id: detail&.pet&.public_id, care_type: detail&.care_type, amount_g: detail&.amount_g)
           when TaskOccurrence
             { id: record.public_id, task_id: record.task.public_id, title: record.task.title, scheduled_at: record.scheduled_at.iso8601, status: record.status, assignee_id: record.assignee&.public_id, actor_id: record.actor&.public_id, credited_user_id: record.credited_user&.public_id, resolved_at: record.resolved_at&.iso8601 }
           when User

@@ -1,13 +1,14 @@
 require "test_helper"
 class HouseholdSecurityTest < ActiveSupport::TestCase
   setup do
-    @household = Household.create!(name: "Home", time_zone: "UTC", pets_enabled: true)
+    @household = Household.create!(name: "Home", time_zone: "UTC")
     @household.memberships.create!(user: users(:one), admin: true)
+    @household.household_modules.create!(key: "pet_care", enabled_by: users(:one), enabled_at: Time.current)
   end
   test "feeding resolves once and consumes stock atomically" do
     pet = pets(:one)
     pet.update!(household: @household)
-    task = Tasks::Save.call(task: @household.tasks.new, attributes: { title: "Breakfast", pet: pet, feeding_amount_g: 100, recurrence: "once", starts_on: Date.current, local_time: "09:00", time_zone: "UTC" })
+    task = Tasks::Save.call(task: @household.tasks.new, attributes: { title: "Breakfast", kind: "pet_care", pet_care_detail: { pet: pet, care_type: "feeding", amount_g: 100 }, recurrence: "once", starts_on: Date.current, local_time: "09:00", time_zone: "UTC" })
     occurrence = task.task_occurrences.first
     bag = pet.active_food_bag
     before = bag.remaining_weight_g
@@ -18,10 +19,12 @@ class HouseholdSecurityTest < ActiveSupport::TestCase
     assert_equal before - 100, bag.reload.remaining_weight_g
   end
   test "cross-household assignments and pets are rejected" do
-    task = @household.tasks.new(title: "Task", recurrence: "daily", starts_on: Date.current, local_time: "09:00", time_zone: "UTC", assignee: users(:two), pet: pets(:two), feeding_amount_g: 10)
+    task = @household.tasks.new(title: "Task", kind: "pet_care", recurrence: "daily", starts_on: Date.current, local_time: "09:00", time_zone: "UTC", assignee: users(:two))
+    detail = task.build_pet_care_task_detail(pet: pets(:two), care_type: "feeding", amount_g: 10)
     assert_not task.valid?
+    assert_not detail.valid?
     assert task.errors[:assignee].any?
-    assert task.errors[:pet].any?
+    assert detail.errors[:pet].any?
   end
   test "expired and removed-member tokens are invalid" do
     token, raw = ApiToken.issue!(household: @household, user: users(:one), name: "Test", scopes: [ "tasks:read" ], expires_at: 1.second.ago)

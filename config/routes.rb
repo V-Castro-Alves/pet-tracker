@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   resources :households, only: %i[index new create show update] do
+    resources :modules, only: %i[create destroy], controller: :household_modules, param: :key
     resources :tasks, except: :show do
       resource :reminder, only: %i[edit update], controller: :task_reminders
     end
@@ -27,10 +28,7 @@ Rails.application.routes.draw do
   resource :registration, only: %i[new create]
   resources :passwords, param: :token
   resources :pets do
-    resources :meal_slots, except: :show do
-      resource :reminder, only: %i[edit update], controller: :meal_reminders
-    end
-    resources :meal_logs, only: %i[index new create]
+    resources :feeding_entries, only: %i[index create]
     resources :food_bags, only: %i[index new create] do
       patch :finish, on: :member
     end
@@ -38,16 +36,12 @@ Rails.application.routes.draw do
       get :download
       patch :regenerate
     end
-    resources :pet_users, only: %i[index destroy]
-    resources :pet_invites, only: %i[create destroy]
     resources :weight_logs, except: :show
     resources :vaccines, except: :show
     resources :medical_entries, except: :show
   end
 
-  get "meal_log/:qr_token", to: "qr_meal_logs#show", as: :qr_meal_log
-  get "invites/:token", to: "invitations#show", as: :invitation
-  post "invites/:token", to: "invitations#create"
+  get "feeding/:qr_token", to: "qr_meal_logs#show", as: :qr_meal_log
   resources :notifications, only: %i[index update] do
     patch :read_all, on: :collection
   end

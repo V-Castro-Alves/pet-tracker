@@ -1,4 +1,4 @@
-# Household API v1
+# HouseMate API v1
 
 The running application serves the OpenAPI contract at `/openapi.json`. Interactive completion, assignment, and reminder controls use this API with browser sessions and CSRF tokens. Ordinary Rails forms call the same domain services directly.
 
@@ -7,6 +7,8 @@ The running application serves the OpenAPI contract at `/openapi.json`. Interact
 Open a household → Integrations → Create token. Select only the needed scopes. Tokens expire after 90 days, are displayed once, and can be revoked immediately. Store tokens in your integration's secret storage, never in browser JavaScript. A token grants access only within its household and only while its owner remains a member.
 
 Scopes: `tasks:read` lists households, members, tasks, occurrences and personal reminder settings; `tasks:write` manages tasks and resolves occurrences; `reminders:write` changes the caller's reminder settings; `pets:read` reads pet summaries. Scopes are independent: choose both read and write when needed.
+
+Household responses expose enabled first-party modules in `modules`. Pet summaries are available only while the household's `pet_care` module is enabled. Tasks use `kind: "standard"` by default. A `pet_care` task also accepts `pet_id`, `care_type`, and an optional `amount_g` for feeding tasks.
 
 Every API mutation requires an `Idempotency-Key` of at most 200 characters. Generate a new UUID per intended action and reuse it, the exact JSON body, path, and credential on network retries. Successful responses are durably replayed. Reusing a key for another payload returns 409. Distinct requests resolving an already-resolved occurrence also return 409. Keys are scoped to the user and retained indefinitely in v1; do not reuse them across tokens.
 

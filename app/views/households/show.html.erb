@@ -1,6 +1,18 @@
-<h1><%= @household.name %></h1>
-<p><%= link_to "Tasks", household_tasks_path(@household) %> · <%= link_to "Integrations", household_integrations_path(@household) %></p>
-<% if @household.pets_enabled? %><p><%= link_to "Add pet", new_pet_path(household_id: @household.public_id) %></p><% @household.pets.each do |pet| %><p><%= link_to pet.name, pet %></p><% end %><% end %>
+<header class="page-header"><div><p class="eyebrow">Household</p><h1><%= @household.name %></h1><p class="page-intro">Shared tasks, people, and optional modules in one place.</p></div><%= link_to "View tasks", household_tasks_path(@household), class: "button button-primary button-fit" %></header>
+<nav class="household-navigation" aria-label="Household sections"><%= link_to "Tasks", household_tasks_path(@household) %><%= link_to "Integrations", household_integrations_path(@household) %></nav>
+
+<section class="dashboard-section"><div class="section-heading"><div><p class="eyebrow">Modules</p><h2>Make this household your own</h2></div></div>
+  <article class="module-card"><div><h3>🐾 Pet Care</h3><p class="muted">Add pets, care tasks, feeding history, health records, and food inventory to this household.</p></div>
+    <% if @household.pet_care_enabled? %>
+      <span class="status-badge status-fed">Enabled</span>
+      <%= link_to "Add a pet", new_pet_path(household_id: @household.public_id), class: "button button-secondary" %>
+      <% if @household.administered_by?(Current.user) %><%= button_to "Disable", household_module_path(@household, "pet_care"), method: :delete, class: "link-button" %><% end %>
+    <% elsif @household.administered_by?(Current.user) %>
+      <%= button_to "Enable Pet Care", household_modules_path(@household), params: { key: "pet_care" }, class: "button button-secondary" %>
+    <% else %><span class="muted">Not enabled</span><% end %>
+  </article>
+  <% if @household.pet_care_enabled? && @household.pets.any? %><div class="pet-grid"><% @household.pets.with_attached_photo.order(:name).each do |pet| %><%= link_to pet, class: "pet-card" do %><div class="pet-card-body"><h3><%= pet.name %></h3><p><%= pet.species %><%= " · #{pet.breed}" if pet.breed.present? %></p></div><% end %><% end %></div><% end %>
+</section>
 <h2>Members</h2>
 <% @household.memberships.includes(:user).each do |membership| %>
   <p><%= membership.user.name %> <%= "(administrator)" if membership.admin? %></p>
